@@ -1,4 +1,5 @@
 const R = require('ramda');
+const cursor = require('ansi')(process.stdout);
 const { restApi, wsApi } = require('./api');
 
 const pairName = 'LTCBTC';
@@ -13,6 +14,7 @@ const takeProfit = purchasePrice * (1 + stopLossDiff * ratio);
 console.log(`Price:          ${purchasePrice}`);
 console.log(`Stop loss at:   ${stopLoss}`);
 console.log(`Take profit at: ${takeProfit}`);
+cursor.write('Waiting for prices...');
 
 const getPrice = R.prop("currDayClosingPrice");
 
@@ -28,9 +30,18 @@ const shouldSell = (price) => {
 };
 
 const sell = (price) => {
-  console.log(`Selling at ${price}`);
+  cursor.horizontalAbsolute(0).eraseLine();
+  cursor.write(`Selling at ${price}\n`);
+  cursor.reset();
 };
 
+const makeDots = (num) => R.times(() => ".", num).join("");
+let dotsNum = 1;
 const wait = (price) => {
-  console.log(`Waiting at ${price}`);
+  cursor.horizontalAbsolute(0).eraseLine();
+  cursor.write(`Waiting at ${price}${makeDots(dotsNum)}`);
+  dotsNum++;
+  if (dotsNum % 7 === 0) {
+    dotsNum = 1;
+  }
 };
