@@ -6,6 +6,7 @@
   "dependencies": {
     "ansi": "^0.3.1",
     "binance": "https://github.com/jetpackpony/binance/tarball/master",
+    "math-precision": "^1.0.4",
     "nconf": "^0.10.0",
     "ramda": "^0.25.0"
   },

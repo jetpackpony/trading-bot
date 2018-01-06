@@ -1,6 +1,7 @@
 const R = require('ramda');
 const cursor = require('ansi')(process.stdout);
 const { restApi, wsApi } = require('./api');
+const round = require('math-precision').round;
 
 const pairName = 'LTCBTC';
 const purchasePrice = 0.017255;
@@ -8,8 +9,8 @@ const amount = 0.2;
 const ratio = 2;            // take-profit-diff = ratio * stop-loss-diff
 const stopLossDiff = 0.05;  // in percent
 
-const stopLoss = purchasePrice * (1 - stopLossDiff);
-const takeProfit = purchasePrice * (1 + stopLossDiff * ratio);
+const stopLoss = round(purchasePrice * (1 - stopLossDiff), 8);
+const takeProfit = round(purchasePrice * (1 + stopLossDiff * ratio), 8);
 
 console.log(`Price:          ${purchasePrice}`);
 console.log(`Stop loss at:   ${stopLoss}`);
