@@ -58,4 +58,4 @@ typings/
 .env
 
 # bot config stuff
-config.json
+*.config.json
