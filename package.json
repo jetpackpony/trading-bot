@@ -1,0 +1,23 @@
+{
+  "name": "trading-bot",
+  "version": "1.0.0",
+  "description": "A bot that is trading",
+  "main": "app.js",
+  "dependencies": {
+    "binance": "^1.1.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jetpackpony/trading-bot.git"
+  },
+  "author": "jetpackpony",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/jetpackpony/trading-bot/issues"
+  },
+  "homepage": "https://github.com/jetpackpony/trading-bot#readme"
+}
