@@ -1,13 +1,14 @@
 const R = require('ramda');
 const round = require('math-precision').round;
-const { tickPrice } = require('./api');
+const {
+  tickPrice,
+  sellPair
+} = require('./api');
 const createDotsMaker = require('./helpers/dots');
 const {
   eraseWrite,
   consoleReset
 } = require('./helpers/ansiConsole');
-
-
 
 const pairName = 'LTCBTC';
 const purchasePrice = 0.017255;
@@ -23,20 +24,34 @@ console.log(`Stop loss at:   ${stopLoss.toFixed(8)}`);
 console.log(`Take profit at: ${takeProfit.toFixed(8)}`);
 eraseWrite('Connecting to the thing...');
 
+let selling = false;
 const socket = tickPrice(pairName, (price) => {
-  (shouldSell(price, stopLoss, takeProfit))
-    ? sell(pairName, price)
-    : wait(pairName, price);
+  if (!selling) {
+    if (shouldSell(price, stopLoss, takeProfit)) {
+      selling = true;
+      sell(pairName, amount, 0.0399);
+    } else {
+      wait(pairName, price);
+    }
+  }
 });
 
 const shouldSell = (price, stopLoss, takeProfit) => {
   return (price <= stopLoss || price >= takeProfit);
 };
 
-const sell = (pairName, price) => {
+const sell = (pairName, amount, price) => {
   eraseWrite(`Selling at:     ${price}\n`);
-  consoleReset();
-  socket.close();
+  sellPair(pairName, amount, price, (err, data) => {
+    if (err) {
+      console.log(`Failed to sell. Err: ${err}`);
+      console.log(`Data: ${JSON.stringify(data)}`);
+    } else {
+      console.log(`Created orderId: ${data.orderId}`, data);
+    }
+    consoleReset();
+    socket.close();
+  });
 };
 
 const getDots = createDotsMaker();

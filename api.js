@@ -17,8 +17,20 @@ const tickPrice = (pairName, callback) => {
   });
 };
 
+const sellPair = (pairName, qty, price, callback) => {
+  binanceRest.newOrder({
+    symbol: pairName,
+    side: "SELL",
+    type: "LIMIT",
+    timeInForce: "GTC",
+    quantity: qty,
+    price
+  }, callback);
+};
+
 module.exports = {
   restApi: binanceRest,
   wsApi: binanceWS,
-  tickPrice
+  tickPrice,
+  sellPair
 };

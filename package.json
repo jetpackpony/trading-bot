@@ -5,7 +5,7 @@
   "main": "app.js",
   "dependencies": {
     "ansi": "^0.3.1",
-    "binance": "https://github.com/jetpackpony/binance/tarball/master",
+    "binance": "https://github.com/jetpackpony/binance/tarball/cef1c651d3aa3d9e0828085626c4e1844a34a6e1",
     "math-precision": "^1.0.4",
     "nconf": "^0.10.0",
     "ramda": "^0.25.0"
