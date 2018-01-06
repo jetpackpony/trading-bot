@@ -1,7 +1,13 @@
 const R = require('ramda');
-const cursor = require('ansi')(process.stdout);
-const { restApi, wsApi } = require('./api');
 const round = require('math-precision').round;
+const { tickPrice } = require('./api');
+const createDotsMaker = require('./helpers/dots');
+const {
+  eraseWrite,
+  consoleReset
+} = require('./helpers/ansiConsole');
+
+
 
 const pairName = 'LTCBTC';
 const purchasePrice = 0.017255;
@@ -12,37 +18,27 @@ const stopLossDiff = 0.05;  // in percent
 const stopLoss = round(purchasePrice * (1 - stopLossDiff), 8);
 const takeProfit = round(purchasePrice * (1 + stopLossDiff * ratio), 8);
 
-console.log(`Price:          ${purchasePrice}`);
-console.log(`Stop loss at:   ${stopLoss}`);
-console.log(`Take profit at: ${takeProfit}`);
-cursor.write('Waiting for prices...');
+console.log(`Purchase price: ${purchasePrice.toFixed(8)}`);
+console.log(`Stop loss at:   ${stopLoss.toFixed(8)}`);
+console.log(`Take profit at: ${takeProfit.toFixed(8)}`);
+eraseWrite('Connecting to the thing...');
 
-const getPrice = R.prop("currDayClosingPrice");
-
-wsApi.onTicker(pairName, (data) => {
-  const price = getPrice(data);
-  (shouldSell(price))
-    ? sell(price)
-    : wait(price);
+tickPrice(pairName, (price) => {
+  (shouldSell(price, stopLoss, takeProfit))
+    ? sell(pairName, price)
+    : wait(pairName, price);
 });
 
-const shouldSell = (price) => {
+const shouldSell = (price, stopLoss, takeProfit) => {
   return (price <= stopLoss || price >= takeProfit);
 };
 
-const sell = (price) => {
-  cursor.horizontalAbsolute(0).eraseLine();
-  cursor.write(`Selling at ${price}\n`);
-  cursor.reset();
+const sell = (pairName, price) => {
+  eraseWrite(`Selling at:     ${price}\n`);
+  consoleReset();
 };
 
-const makeDots = (num) => R.times(() => ".", num).join("");
-let dotsNum = 1;
-const wait = (price) => {
-  cursor.horizontalAbsolute(0).eraseLine();
-  cursor.write(`Waiting at ${price}${makeDots(dotsNum)}`);
-  dotsNum++;
-  if (dotsNum % 7 === 0) {
-    dotsNum = 1;
-  }
+const getDots = createDotsMaker();
+const wait = (pairName, price) => {
+  eraseWrite(`Waiting at:     ${price}${getDots()}`);
 };
