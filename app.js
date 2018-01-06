@@ -1,10 +1,12 @@
-const { restApi } = require('./api');
+const R = require('ramda');
+const { restApi, wsApi } = require('./api');
 
-restApi
-  .openOrders({ symbol: "ETHBTC" })
-  .then((data) => {
-    console.log(data);
-  })
-  .catch((err) => {
-    console.err(err);
-  });
+const getPrices = R.pick([
+  "currDayClosingPrice",
+  "bestBidPrice",
+  "bestAskPrice"
+]);
+
+wsApi.onTicker('ETHBTC', (data) => {
+  console.log(getPrices(data));
+});

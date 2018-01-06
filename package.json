@@ -4,8 +4,9 @@
   "description": "A bot that is trading",
   "main": "app.js",
   "dependencies": {
-    "binance": "^1.1.2",
-    "nconf": "^0.10.0"
+    "binance": "https://github.com/jetpackpony/binance/tarball/master",
+    "nconf": "^0.10.0",
+    "ramda": "^0.25.0"
   },
   "devDependencies": {},
   "scripts": {

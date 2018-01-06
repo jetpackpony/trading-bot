@@ -6,6 +6,9 @@ const binanceRest = new binance.BinanceRest({
   secret: config.get('API_SECRET')
 });
 
+const binanceWS = new binance.BinanceWS();
+
 module.exports = {
-  restApi: binanceRest
+  restApi: binanceRest,
+  wsApi: binanceWS
 };
