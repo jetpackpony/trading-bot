@@ -4,7 +4,8 @@
   "description": "A bot that is trading",
   "main": "app.js",
   "dependencies": {
-    "binance": "^1.1.2"
+    "binance": "^1.1.2",
+    "nconf": "^0.10.0"
   },
   "devDependencies": {},
   "scripts": {
