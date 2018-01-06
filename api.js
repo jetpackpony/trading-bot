@@ -11,7 +11,7 @@ const binanceWS = new binance.BinanceWS();
 
 const getPrice = R.prop("currDayClosingPrice");
 const tickPrice = (pairName, callback) => {
-  binanceWS.onTicker(pairName, (data) => {
+  return binanceWS.onTicker(pairName, (data) => {
     const price = getPrice(data);
     callback(price);
   });

@@ -23,7 +23,7 @@ console.log(`Stop loss at:   ${stopLoss.toFixed(8)}`);
 console.log(`Take profit at: ${takeProfit.toFixed(8)}`);
 eraseWrite('Connecting to the thing...');
 
-tickPrice(pairName, (price) => {
+const socket = tickPrice(pairName, (price) => {
   (shouldSell(price, stopLoss, takeProfit))
     ? sell(pairName, price)
     : wait(pairName, price);
@@ -36,6 +36,7 @@ const shouldSell = (price, stopLoss, takeProfit) => {
 const sell = (pairName, price) => {
   eraseWrite(`Selling at:     ${price}\n`);
   consoleReset();
+  socket.close();
 };
 
 const getDots = createDotsMaker();
