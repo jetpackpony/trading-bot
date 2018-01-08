@@ -1,5 +1,6 @@
 const R = require('ramda');
 const round = require('math-precision').round;
+const config = require('./config');
 const {
   tickPrice,
   sellPair
@@ -10,11 +11,13 @@ const {
   consoleReset
 } = require('./helpers/ansiConsole');
 
-const pairName = 'LTCBTC';
-const purchasePrice = 0.017255;
-const amount = 0.2;
-const ratio = 2;            // take-profit-diff = ratio * stop-loss-diff
-const stopLossDiff = 0.05;  // in percent
+const pairName = config.get('pairName');
+const purchasePrice = config.get('purchasePrice');
+const amount = config.get('amount');
+// take-profit-diff = ratio * stop-loss-diff
+const ratio = config.get('lossProfitRatio') || 1.5;
+// lower loss border in percent
+const stopLossDiff = config.get('lossDiff') || 0.075;
 
 const stopLoss = round(purchasePrice * (1 - stopLossDiff), 8);
 const takeProfit = round(purchasePrice * (1 + stopLossDiff * ratio), 8);
