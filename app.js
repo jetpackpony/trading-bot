@@ -29,7 +29,7 @@ const socket = tickPrice(pairName, (price) => {
   if (!selling) {
     if (shouldSell(price, stopLoss, takeProfit)) {
       selling = true;
-      sell(pairName, amount, 0.0399);
+      sell(pairName, amount, price);
     } else {
       wait(pairName, price);
     }
