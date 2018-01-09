@@ -28,9 +28,22 @@ const sellPair = (pairName, qty, price, callback) => {
   }, callback);
 };
 
+const account = (callback) => {
+  binanceRest.account({}, callback);
+};
+
+const ticker24hr = (pairName, callback) => {
+  binanceRest.ticker24hr({ symbol: pairName }, callback);
+};
+
+const info = (callback) => binanceRest.exchangeInfo(callback);
+
 module.exports = {
   restApi: binanceRest,
   wsApi: binanceWS,
   tickPrice,
-  sellPair
+  sellPair,
+  account,
+  info,
+  ticker24hr
 };
