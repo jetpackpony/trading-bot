@@ -1,5 +1,6 @@
 const R = require('ramda');
 const round = require('math-precision').round;
+const inquirer = require('inquirer');
 const { config, checkArg } = require('./config');
 const {
   tickPrice,
@@ -39,57 +40,76 @@ console.log(`         Stop loss at: ${stopLossPrice.toFixed(8)} (${stopLossPerce
 const takeProfitPercent = (takeProfitPrice / purchasePrice * 100).toFixed(2);
 console.log(`       Take profit at: ${takeProfitPrice.toFixed(8)} (${takeProfitPercent}%)`);
 
-eraseWrite('Connecting to the thing...');
-let selling = false;
-const socket = tickPrice(pairName, (price) => {
-  if (!selling) {
-    if (shouldBuySell(price, stopLossPrice, takeProfitPrice)) {
-      selling = true;
-      if (buySell === 'SELL') {
-        sell(pairName, amount, price);
-      } else {
-        buy(pairName, amount, price);
+inquirer
+  .prompt({
+    type: 'confirm',
+    name: 'confirm',
+    message: 'All correct?',
+    default: false
+  })
+  .then(({ confirm }) => {
+    if (confirm) {
+      return true;
+    } else {
+      throw Error("cancelled by user");
+    }
+  })
+  .then(() => {
+    eraseWrite('Connecting to the thing...', 1);
+    let selling = false;
+    const socket = tickPrice(pairName, (price) => {
+      if (!selling) {
+        if (shouldBuySell(price, stopLossPrice, takeProfitPrice)) {
+          selling = true;
+          if (buySell === 'SELL') {
+            sell(pairName, amount, price);
+          } else {
+            buy(pairName, amount, price);
+          }
+        } else {
+          wait(pairName, price);
+        }
       }
-    } else {
-      wait(pairName, price);
-    }
-  }
-});
+    });
 
-const shouldBuySell = (price, stopLossPrice, takeProfitPrice) => {
-  return (price <= stopLossPrice || price >= takeProfitPrice);
-};
+    const shouldBuySell = (price, stopLossPrice, takeProfitPrice) => {
+      return (price <= stopLossPrice || price >= takeProfitPrice);
+    };
 
-const sell = (pairName, amount, price) => {
-  eraseWrite(`       Selling at: ${price}\n`);
-  sellPair(pairName, amount, price, (err, data) => {
-    if (err) {
-      console.log(`Failed to sell. Err: ${err}`);
-      console.log(`Data: ${JSON.stringify(data)}`);
-    } else {
-      console.log(`Created orderId:\n${data.orderId}`, data);
-    }
-    consoleReset();
-    socket.close();
+    const sell = (pairName, amount, price) => {
+      eraseWrite(`       Selling at: ${price}\n`);
+      sellPair(pairName, amount, price, (err, data) => {
+        if (err) {
+          console.log(`Failed to sell. Err: ${err}`);
+          console.log(`Data: ${JSON.stringify(data)}`);
+        } else {
+          console.log(`Created orderId:\n${data.orderId}`, data);
+        }
+        consoleReset();
+        socket.close();
+      });
+    };
+
+    const buy = (pairName, amount, price) => {
+      eraseWrite(`        Buying at: ${price}\n`);
+      buyPair(pairName, round(amount / price, 8), price, (err, data) => {
+        if (err) {
+          console.log(`Failed to buy. Err: ${err}`);
+          console.log(`Data: ${JSON.stringify(data)}`);
+        } else {
+          console.log(`Created orderId:\n${data.orderId}`, data);
+        }
+        consoleReset();
+        socket.close();
+      });
+    };
+
+    const getDots = createDotsMaker();
+    const wait = (pairName, price) => {
+      const prc = `${price} (${(price / purchasePrice * 100).toFixed(2)}%)`
+      eraseWrite(`        Current price: ${prc}${getDots()}`);
+    };
+  })
+  .catch((err) => {
+    console.error(err);
   });
-};
-
-const buy = (pairName, amount, price) => {
-  eraseWrite(`        Buying at: ${price}\n`);
-  buyPair(pairName, round(amount / price, 8), price, (err, data) => {
-    if (err) {
-      console.log(`Failed to buy. Err: ${err}`);
-      console.log(`Data: ${JSON.stringify(data)}`);
-    } else {
-      console.log(`Created orderId:\n${data.orderId}`, data);
-    }
-    consoleReset();
-    socket.close();
-  });
-};
-
-const getDots = createDotsMaker();
-const wait = (pairName, price) => {
-  const prc = `${price} (${(price / purchasePrice * 100).toFixed(2)}%)`
-  eraseWrite(`        Current price: ${prc}${getDots()}`);
-};
