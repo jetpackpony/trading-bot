@@ -54,6 +54,7 @@ module.exports = {
   wsApi: binanceWS,
   tickPrice,
   sellPair,
+  buyPair,
   account,
   info,
   ticker24hr

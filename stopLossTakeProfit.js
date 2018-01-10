@@ -1,10 +1,11 @@
 const R = require('ramda');
-const round = require('math-precision').round;
+const { round, floor } = require('math-precision');
 const inquirer = require('inquirer');
 const { config, checkArg } = require('./config');
 const {
   tickPrice,
-  sellPair
+  sellPair,
+  buyPair
 } = require('./api');
 const createDotsMaker = require('./helpers/dots');
 const {
@@ -83,7 +84,7 @@ inquirer
           console.log(`Failed to sell. Err: ${err}`);
           console.log(`Data: ${JSON.stringify(data)}`);
         } else {
-          console.log(`Created orderId:\n${data.orderId}`, data);
+          console.log(`Created orderId: ${data.orderId}`, data);
         }
         consoleReset();
         socket.close();
@@ -91,13 +92,14 @@ inquirer
     };
 
     const buy = (pairName, amount, price) => {
-      eraseWrite(`        Buying at: ${price}\n`);
-      buyPair(pairName, round(amount / price, 8), price, (err, data) => {
+      const amt = floor(amount / price, 5);
+      eraseWrite(`Trying to buy ${amt} at ${price}\n`);
+      buyPair(pairName, amt, price, (err, data) => {
         if (err) {
           console.log(`Failed to buy. Err: ${err}`);
           console.log(`Data: ${JSON.stringify(data)}`);
         } else {
-          console.log(`Created orderId:\n${data.orderId}`, data);
+          console.log(`Created orderId: ${data.orderId}`, data);
         }
         consoleReset();
         socket.close();
