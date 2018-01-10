@@ -1,6 +1,6 @@
 const binance = require('binance');
 const R = require('ramda');
-const config = require('./config');
+const { config } = require('./config');
 
 const binanceRest = new binance.BinanceRest({
   key: config.get('API_KEY'),

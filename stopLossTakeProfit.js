@@ -1,6 +1,6 @@
 const R = require('ramda');
 const round = require('math-precision').round;
-const config = require('./config');
+const { config, checkArg } = require('./config');
 const {
   tickPrice,
   sellPair
@@ -10,6 +10,10 @@ const {
   eraseWrite,
   consoleReset
 } = require('./helpers/ansiConsole');
+
+checkArg('pairName');
+checkArg('purchasePrice');
+checkArg('amount');
 
 const pairName = config.get('pairName');
 const purchasePrice = config.get('purchasePrice');
