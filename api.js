@@ -28,6 +28,17 @@ const sellPair = (pairName, qty, price, callback) => {
   }, callback);
 };
 
+const buyPair = (pairName, qty, price, callback) => {
+  binanceRest.newOrder({
+    symbol: pairName,
+    side: "BUY",
+    type: "LIMIT",
+    timeInForce: "GTC",
+    quantity: qty,
+    price
+  }, callback);
+};
+
 const account = (callback) => {
   binanceRest.account({}, callback);
 };
