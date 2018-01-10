@@ -32,8 +32,10 @@ console.log(`           Amount: ${amount}`);
 console.log(`     Purchased at: ${purchasePrice.toFixed(8)}`);
 console.log(`Profit/Loss ratio: ${profitLossRatio}`);
 console.log(`        Stop loss: ${stopLoss * 100}%`);
-console.log(`     Stop loss at: ${stopLossPrice.toFixed(8)} (${(stopLossPrice / purchasePrice * 100).toFixed(2)}%)`);
-console.log(`   Take profit at: ${takeProfitPrice.toFixed(8)} (${(takeProfitPrice / purchasePrice * 100).toFixed(2)}%)`);
+const stopLossPercent = (stopLossPrice / purchasePrice * 100).toFixed(2);
+console.log(`     Stop loss at: ${stopLossPrice.toFixed(8)} (${stopLossPercent}%)`);
+const takeProfitPercent = (takeProfitPrice / purchasePrice * 100).toFixed(2);
+console.log(`   Take profit at: ${takeProfitPrice.toFixed(8)} (${takeProfitPercent}%)`);
 eraseWrite('Connecting to the thing...');
 
 let selling = false;
