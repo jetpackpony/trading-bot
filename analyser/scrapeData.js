@@ -64,10 +64,13 @@ async function runThings() {
   })
     .then(metadata => {
       console.log(metadata);
+      console.log('Removing tmp file...');
+      fs.unlink(tmpFileName, () => console.log('Complete'));
     })
     .catch(error => {
       console.error(error);
     });
+
 
 }
 
