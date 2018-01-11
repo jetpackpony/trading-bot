@@ -1,6 +1,7 @@
 const R = require('ramda');
 const fs = require('fs');
 const csv = require('fast-csv');
+const csvReorder = require('csv-reorder');
 const { getKlines } = require('../api');
 const { config, checkArg } = require('../config');
 const moment = require('moment');
@@ -8,7 +9,16 @@ const moment = require('moment');
 const symbol = 'ETHBTC';
 const interval = '1h';
 const timeMonths = 6;
+const tmpFileName = 'tmp.csv';
 const fileName = 'test.csv';
+
+const csvStream = csv.createWriteStream({headers: true});
+const writableStream = fs.createWriteStream(tmpFileName);
+writableStream.on("finish", function(){
+  console.log("DONE!");
+});
+csvStream.pipe(writableStream);
+const writeToCSV = csvStream.write.bind(csvStream);
 
 const isDataCorrect = R.pathOr(false, ['0', 'openTime']);
 const fromTime = moment().add(timeMonths * -1, 'months').valueOf();
@@ -29,14 +39,6 @@ const processLoad =
 
 async function runThings() {
   let data;
-  const csvStream = csv.createWriteStream({headers: true});
-  const writableStream = fs.createWriteStream(fileName);
-  writableStream.on("finish", function(){
-    console.log("DONE!");
-  });
-  csvStream.pipe(writableStream);
-  const writeToCSV = csvStream.write.bind(csvStream);
-
   try {
     data = await getKlines({ symbol, interval });
     while(data) {
@@ -49,6 +51,24 @@ async function runThings() {
     console.log(data);
   }
   csvStream.end();
+
+  console.log('Reordering output csv file');
+  csvReorder({
+    input: tmpFileName,
+    output: fileName,
+    sort: 'openTime',
+    type: 'number',
+    descending: false,
+    remove: false,
+    metadata: true
+  })
+    .then(metadata => {
+      console.log(metadata);
+    })
+    .catch(error => {
+      console.error(error);
+    });
+
 }
 
 runThings();
