@@ -49,6 +49,23 @@ const ticker24hr = (pairName, callback) => {
 
 const info = (callback) => binanceRest.exchangeInfo(callback);
 
+/**
+ * queryObj:
+ * https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
+ */
+const getKlines = (queryObj) => {
+  console.log(`Querying: ${JSON.stringify(queryObj, null, 2)}`);
+  return new Promise((resolve, reject) => {
+    binanceRest.klines(queryObj, (err, data) => {
+      if (err) {
+        reject(err, data);
+        return;
+      }
+      resolve(data);
+    });
+  });
+};
+
 module.exports = {
   restApi: binanceRest,
   wsApi: binanceWS,
@@ -57,5 +74,6 @@ module.exports = {
   buyPair,
   account,
   info,
-  ticker24hr
+  ticker24hr,
+  getKlines
 };
