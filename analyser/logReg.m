@@ -25,18 +25,58 @@ fprintf('Total examples: %i\n', totalNum);
 fprintf('Positive examples: %i (%.2f%%)\n', positives, posPercent);
 
 %% Break into training, CV and test sets
-
 trainingSize = 0.7;
 cvSize = 0.15;
 testSize = 0.15;
 
-randIds = randperm(size(x, 1));
+% Add intercept term to x
+[m, n] = size(x);
+x = [ones(m, 1) x];
 
+% Randomize the ids
+randIds = randperm(m);
+
+% Calculate the number of ids for each set
 trainNum = floor(size(randIds, 2) * trainingSize);
 cvNum = floor(size(randIds, 2) * cvSize);
 testSize = size(randIds, 2) - trainNum - cvNum;
 
+% Extract sets from data set
 xtrain = x(randIds(1, 1:trainNum), :);
+ytrain = y(randIds(1, 1:trainNum), :);
 xcv = x(randIds(1, (trainNum + 1):(trainNum + cvNum)), :);
+ycv = y(randIds(1, (trainNum + 1):(trainNum + cvNum)), :);
 xtest = x(randIds(1, (trainNum + cvNum + 1):end), :);
+ytest = y(randIds(1, (trainNum + cvNum + 1):end), :);
+
+fprintf('Braking data into 3 sets: ');
+fprintf('training (%i), cross-validation (%i) and test (%i)\n', ...
+                  size(xtrain, 1), size(xcv, 1), size(xtest, 1));
+
+%% Train the classifier
+% Initialize fitting parameters
+initial_theta = zeros(n + 1, 1);
+
+%  Set options for fminunc
+options = optimset('GradObj', 'on', 'MaxIter', 400);
+
+%  Run fminunc to obtain the optimal theta
+%  This function will return theta and the cost
+[theta, cost] = ...
+  fminunc(@(t)(costFunction(t, xtrain, ytrain)), initial_theta, options);
+
+fprintf('Finished training classifier\n');
+fprintf('Cost at theta found by fminunc: %f\n', cost);
+fprintf('Theta: \n');
+fprintf(' %f \n', theta);
+
+%% Check algorithm's accuracy
+% Compute accuracy
+ptrain = predict(theta, xtrain);
+accTrain = mean(double(ptrain == ytrain)) * 100;
+fprintf('Training data accuracy: %f\n', accTrain);
+
+ptest = predict(theta, xtest);
+accTest = mean(double(ptest == ytest)) * 100;
+fprintf('Test data accuracy: %f\n', accTest);
 
