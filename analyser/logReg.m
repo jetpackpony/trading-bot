@@ -27,6 +27,8 @@ posPercent = positives / totalNum * 100;
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Positive examples: %i (%.2f%%)\n', positives, posPercent);
+fprintf('Writing training set to trainingSet.csv\n');
+csvwrite('trainingSet.csv', [x y]);
 
 %fprintf('\nProgram paused. Press enter to continue.\n');
 %pause;
@@ -76,6 +78,8 @@ fprintf('Finished training classifier\n');
 fprintf('Cost at theta found by fminunc: %f\n', cost);
 fprintf('Theta: \n');
 fprintf(' %f \n', theta);
+fprintf('Writing theta to theta.csv\n');
+csvwrite('theta.csv', theta);
 
 %% Check algorithm's accuracy
 % Compute accuracy
