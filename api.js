@@ -54,7 +54,6 @@ const info = (callback) => binanceRest.exchangeInfo(callback);
  * https://github.com/binance-exchange/binance-official-api-docs/blob/master/rest-api.md#klinecandlestick-data
  */
 const getKlines = (queryObj) => {
-  console.log(`Querying: ${JSON.stringify(queryObj, null, 2)}`);
   return new Promise((resolve, reject) => {
     binanceRest.klines(queryObj, (err, data) => {
       if (err) {
