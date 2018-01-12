@@ -24,3 +24,19 @@ fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Positive examples: %i (%.2f%%)\n', positives, posPercent);
 
+%% Break into training, CV and test sets
+
+trainingSize = 0.7;
+cvSize = 0.15;
+testSize = 0.15;
+
+randIds = randperm(size(x, 1));
+
+trainNum = floor(size(randIds, 2) * trainingSize);
+cvNum = floor(size(randIds, 2) * cvSize);
+testSize = size(randIds, 2) - trainNum - cvNum;
+
+xtrain = x(randIds(1, 1:trainNum), :);
+xcv = x(randIds(1, (trainNum + 1):(trainNum + cvNum)), :);
+xtest = x(randIds(1, (trainNum + cvNum + 1):end), :);
+
