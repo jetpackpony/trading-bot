@@ -4,15 +4,19 @@
 clear ; close all; clc
 
 %% Load the data
-data = csvread('test.csv');
+fprintf('Reading data from file...\n');
+data = csvread('rawData/2018-01-12_ETHBTC_1h_4_mon_.csv');
 data = data(2:end, :);
 
-%% Extract features
-windowSize = 5;
-postWindowSize = 5;
-topPercent = 3;
-bottomPercent = 1;
+fprintf('Loaded %i data points\n', size(data, 1));
 
+%% Extract features
+windowSize = 24;
+postWindowSize = 5;
+topPercent = 5;
+bottomPercent = 2;
+
+fprintf('Begin extracting features\n');
 [x y] = featuresHistoryWindow(data, windowSize, ...
                         postWindowSize, topPercent, bottomPercent);
 
@@ -23,6 +27,9 @@ posPercent = positives / totalNum * 100;
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Positive examples: %i (%.2f%%)\n', positives, posPercent);
+
+%fprintf('\nProgram paused. Press enter to continue.\n');
+%pause;
 
 %% Break into training, CV and test sets
 trainingSize = 0.7;
@@ -74,9 +81,9 @@ fprintf(' %f \n', theta);
 % Compute accuracy
 ptrain = predict(theta, xtrain);
 accTrain = mean(double(ptrain == ytrain)) * 100;
-fprintf('Training data accuracy: %f\n', accTrain);
+fprintf('Training data accuracy: %.2f%%\n', accTrain);
 
 ptest = predict(theta, xtest);
 accTest = mean(double(ptest == ytest)) * 100;
-fprintf('Test data accuracy: %f\n', accTest);
+fprintf('Test data accuracy: %.2f%%\n', accTest);
 

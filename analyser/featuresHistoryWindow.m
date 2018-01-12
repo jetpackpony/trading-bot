@@ -19,34 +19,14 @@ function [x, y] = featuresHistoryWindow(data, windowSize, ...
   x = [];
   y = [];
   for i = 1:(size(data, 1) - postWindowSize)
-  if (size(curWindow, 2) == windowSize)
-    x(end+1, :) = curWindow;
-    y(end+1, 1) = willPriceJump(curWindow(5), data(i:i+postWindowSize-1, [2 3 4 5]), topPercent, bottomPercent);
-    curWindow = [curWindow(1, 2:end) data(i, 5)];
-  else
-    curWindow(end+1) = data(i, 5);
-    endif
-  endfor
-endfunction
-
-function res = willPriceJump (origPrice, nextPrices, topPercent, bottomPercent)
-  topPrice = origPrice * (1 + topPercent / 100);
-  bottomPrice = origPrice * (1 - bottomPercent / 100);
-  minPrices = nextPrices(:, 3);
-  maxPrices = nextPrices(:, 2);
-
-  drops = minPrices <= bottomPrice;
-  jumps = maxPrices >= topPrice;
-
-  res = 0;
-  for i = 1:size(nextPrices, 1)
-    if (drops(i) == 1)
-      res = 0;
-      return;
-    endif
-    if (jumps(i) > drops(i))
-      res = 1;
-      return;
+    if (size(curWindow, 2) == windowSize)
+      x(end+1, :) = curWindow;
+      y(end+1, 1) = willPriceJump(curWindow(5), ...
+                      data(i:i+postWindowSize-1, [2 3 4 5]), ...
+                      topPercent, bottomPercent);
+      curWindow = [curWindow(1, 2:end) data(i, 5)];
+    else
+      curWindow(end+1) = data(i, 5);
     endif
   endfor
 endfunction
