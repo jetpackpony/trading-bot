@@ -5,12 +5,20 @@ const csvReorder = require('csv-reorder');
 const { getKlines } = require('../api');
 const { config, checkArg } = require('../config');
 const moment = require('moment');
+const path = require('path');
 
 const symbol = 'ETHBTC';
-const interval = '1h';
-const timeMonths = 6;
+const interval = '1m';
+const timeMonths = 1;
 const tmpFileName = 'tmp.csv';
-const fileName = 'test.csv';
+const fileName = [
+  moment().format("YYYY-MM-DD"),
+  symbol,
+  interval,
+  timeMonths,
+  'mon',
+  '.csv'
+].join('_');
 
 const csvStream = csv.createWriteStream({headers: true});
 const writableStream = fs.createWriteStream(tmpFileName);
@@ -55,7 +63,7 @@ async function runThings() {
   console.log('Reordering output csv file');
   csvReorder({
     input: tmpFileName,
-    output: fileName,
+    output: path.join(__dirname, 'rawData', fileName),
     sort: 'openTime',
     type: 'number',
     descending: false,
