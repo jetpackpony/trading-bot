@@ -33,7 +33,7 @@ fprintf('Pos examples wiht gaps: %i (%.2f%%)\n',...
                                 posWithGaps, posWithGapsPercent);
 
 fprintf('Plotting data\n');
-plotData(x, y, yWithGaps);
+plotData(x, y, yWithGaps, 500);
 
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
