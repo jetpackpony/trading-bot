@@ -21,16 +21,19 @@ fprintf('Begin extracting features\n');
                     postWindowSize, topPercent, bottomPercent);
 
 totalNum = size(y, 1);
+days = ceil(totalNum / 24);
 positives = size(find(y == 1), 1);
 posWithGaps = size(find(yWithGaps == 1), 1);
 posPercent = positives / totalNum * 100;
 posWithGapsPercent = posWithGaps / totalNum * 100;
+dealsPerDay = posWithGaps / days;
 
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
-fprintf('Pos examples wiht gaps: %i (%.2f%%)\n',...
+fprintf('Pos examples with gaps: %i (%.2f%%)\n',...
                                 posWithGaps, posWithGapsPercent);
+fprintf('Min avg. deals per day: %i\n', dealsPerDay);
 
 fprintf('Plotting data\n');
 plotData(x, y, yWithGaps, 500);

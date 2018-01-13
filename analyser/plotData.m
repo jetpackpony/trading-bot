@@ -6,8 +6,8 @@ function plotData(x, y, yWithGaps, n)
   maxPrice = max(prices);
 
   posRes = find(yWithGaps(1:n) == 1);
-  fprintf('Total positive examples: %i\n', size(find(y(1:n) == 1), 1));
-  fprintf('Filtered positive examples: %i\n', size(posRes, 1));
+  fprintf('Plotting positive examples: %i\n', size(find(y(1:n) == 1), 1));
+  fprintf('Plotting positive examples with gaps: %i\n', size(posRes, 1));
 
   close all;
   figure('Position', [50, 50, 1200, 700]);
