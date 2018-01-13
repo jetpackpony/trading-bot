@@ -27,6 +27,10 @@ posPercent = positives / totalNum * 100;
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
+
+fprintf('Plotting data\n');
+plotData(x, y);
+
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
 
