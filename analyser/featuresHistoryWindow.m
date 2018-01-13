@@ -15,18 +15,23 @@ function [x, y, yWithGaps] = featuresHistoryWindow(data, ...
 % lower border, the example is counted positive (y == 1). Otherwise
 % the example is negative (y == 0);
 
+  ohlcIndecies = [2 3 4 5];
+  closePriceIndex = 5;
+
   curWindow = [];
   x = [];
   y = [];
-  for i = 1:(size(data, 1) - postWindowSize)
+  for i = 1:(size(data, 1) - postWindowSize + 1)
     if (size(curWindow, 2) == windowSize)
       x(end+1, :) = curWindow;
-      y(end+1, 1) = willPriceJump(curWindow(5), ...
-                      data(i:i+postWindowSize-1, [2 3 4 5]), ...
+      % pass last price in a window and next postWindowSize
+      % prices to compare to it
+      y(end+1, 1) = willPriceJump(curWindow(windowSize), ...
+                      data(i:i+postWindowSize-1, ohlcIndecies),...
                       topPercent, bottomPercent);
-      curWindow = [curWindow(1, 2:end) data(i, 5)];
+      curWindow = [curWindow(1, 2:end) data(i, closePriceIndex)];
     else
-      curWindow(end+1) = data(i, 5);
+      curWindow(end+1) = data(i, closePriceIndex);
     endif
   endfor
 

@@ -74,4 +74,49 @@ else
   fprintf('\nPrice goes below bottomPercent, result should be 0\n');
 endif
 
+
+
+
+%% featuresHistoryWindow
+windowSize = 2;
+postWindowSize = 2;
+topPercent = 2;
+bottomPercent = 1;
+% data is openTime and then OHLC columns
+data = [
+  0 101 101 101 101;
+  0 102 102 102 102;
+  0 103 103 103 103;
+  0 100 101 99 104;
+  0 105 110 105 105;
+  0 106 106 106 106
+];
+
+[x, y, yWithGaps] = featuresHistoryWindow(data, ...
+          windowSize, postWindowSize, topPercent, bottomPercent);
+
+if (size(x, 1) == 3)
+  fprintf('.');
+else
+  fprintf('\nShould have 3 windows\n');
+endif
+
+if (y(1, 1) == 0)
+  fprintf('.');
+else
+  fprintf('\nFirst result should be 0\n');
+endif
+
+if (y(2, 1) == 0)
+  fprintf('.');
+else
+  fprintf('\nSecond result should be 0\n');
+endif
+
+if (y(3, 1) == 1)
+  fprintf('.');
+else
+  fprintf('\nThird result should be 1\n');
+endif
+
 fprintf('\nDone!\n');
