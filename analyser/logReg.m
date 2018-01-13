@@ -118,12 +118,12 @@ fprintf('Pos examples: %i/%i (actual %i/%i)\n\n', ...
             size(find(ytest == 1), 1), size(ytest, 1));
 
 [precision, recall, fScore] = precisionRecall(ptest, ytest);
-fprintf('Precision (truePos / allPos): %.2f\n', precision * 100);
-fprintf('Recall (truePos / actualPos): %.2f\n', recall * 100);
-fprintf('Fscore 2 * P * R / (P + R): %.2f\n\n', fScore);
+fprintf('Precision (truePos / allPos): %.2f%%\n', precision * 100);
+fprintf('Recall (truePos / actualPos): %.2f%%\n', recall * 100);
+fprintf('Fscore 2 * P * R / (P + R): %.2f%%\n\n', fScore * 100);
 
 expProfit = expectedProfit(topPercent, bottomPercent, ...
                                         precision, recall);
-fprintf('Expected profit per deal: %.2f\n', expProfit);
+fprintf('Expected profit per deal: %.2f%%\n', expProfit * 100);
 
 
