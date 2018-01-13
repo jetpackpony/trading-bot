@@ -65,6 +65,8 @@ const getKlines = (queryObj) => {
   });
 };
 
+const onKline = binanceWS.onKline.bind(binanceWS);
+
 module.exports = {
   restApi: binanceRest,
   wsApi: binanceWS,
@@ -74,5 +76,6 @@ module.exports = {
   account,
   info,
   ticker24hr,
-  getKlines
+  getKlines,
+  onKline
 };
