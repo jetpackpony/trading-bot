@@ -17,23 +17,26 @@ topPercent = 2;
 bottomPercent = 1;
 
 fprintf('Begin extracting features\n');
-[x y] = featuresHistoryWindow(data, windowSize, ...
+[x, y, yWithGaps] = featuresHistoryWindow(data, windowSize, ...
                     postWindowSize, topPercent, bottomPercent);
 
 totalNum = size(y, 1);
 positives = size(find(y == 1), 1);
+posWithGaps = size(find(yWithGaps == 1), 1);
 posPercent = positives / totalNum * 100;
+posWithGapsPercent = posWithGaps / totalNum * 100;
 
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
+fprintf('Pos examples wiht gaps: %i (%.2f%%)\n',...
+                                posWithGaps, posWithGapsPercent);
 
 fprintf('Plotting data\n');
-plotData(x, y);
+plotData(x, y, yWithGaps);
 
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
-
 
 fprintf('\nProgram paused. Press enter to continue.\n');
 pause;
