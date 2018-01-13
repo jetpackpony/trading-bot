@@ -115,8 +115,8 @@ fprintf('Precision (truePos / allPos): %.2f\n', precision * 100);
 fprintf('Recall (truePos / actualPos): %.2f\n', recall * 100);
 fprintf('Fscore 2 * P * R / (P + R): %.2f\n\n', fScore);
 
-expProfit = (topPercent * precision) - ...
-                (bottomPercent * (1 - precision));
+expProfit = expectedProfit(topPercent, bottomPercent, ...
+                                        precision, recall);
 fprintf('Expected profit per deal: %.2f\n', expProfit);
 
 
