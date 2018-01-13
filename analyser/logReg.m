@@ -18,7 +18,7 @@ bottomPercent = 2;
 
 fprintf('Begin extracting features\n');
 [x y] = featuresHistoryWindow(data, windowSize, ...
-                        postWindowSize, topPercent, bottomPercent);
+                    postWindowSize, topPercent, bottomPercent);
 
 totalNum = size(y, 1);
 positives = size(find(y == 1), 1);
@@ -26,12 +26,12 @@ posPercent = positives / totalNum * 100;
 
 fprintf('Extracted features\n');
 fprintf('Total examples: %i\n', totalNum);
-fprintf('Positive examples: %i (%.2f%%)\n', positives, posPercent);
+fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
 
-%fprintf('\nProgram paused. Press enter to continue.\n');
-%pause;
+fprintf('\nProgram paused. Press enter to continue.\n');
+pause;
 
 %% Break into training, CV and test sets
 trainingSize = 0.7;
@@ -59,8 +59,8 @@ xtest = x(randIds(1, (trainNum + cvNum + 1):end), :);
 ytest = y(randIds(1, (trainNum + cvNum + 1):end), :);
 
 fprintf('Braking data into 3 sets: ');
-fprintf('training (%i), cross-validation (%i) and test (%i)\n', ...
-                  size(xtrain, 1), size(xcv, 1), size(xtest, 1));
+fprintf('train (%i), cv (%i) and test (%i)\n', ...
+          size(xtrain, 1), size(xcv, 1), size(xtest, 1));
 
 %% Train the classifier
 % Initialize fitting parameters
@@ -72,7 +72,8 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
 %  Run fminunc to obtain the optimal theta
 %  This function will return theta and the cost
 [theta, cost] = ...
-  fminunc(@(t)(costFunction(t, xtrain, ytrain)), initial_theta, options);
+  fminunc(@(t)(costFunction(t, xtrain, ytrain)), ...
+                                  initial_theta, options);
 
 fprintf('Finished training classifier\n');
 fprintf('Cost at theta found by fminunc: %f\n', cost);
