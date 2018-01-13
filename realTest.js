@@ -13,13 +13,14 @@ const {
 
 const getDots = createDotsMaker();
 
-const stopLoss = 0.02;
-const takeProfit = 0.05;
-const windowTime = 5 * 60 * 60 * 1000;
+const stopLoss = 0.01;
+const takeProfit = 0.02;
+const windowSize = 24;
+const postHistoryWindow = 5 * 60 * 60 * 1000;
 
 const symbol = 'ETHBTC';
 const interval = '1h';
-getKlines({ symbol, interval, limit: 24 })
+getKlines({ symbol, interval, limit: windowSize })
   .then((initKlines) => {
     console.log(`Got ${initKlines.length} klines with the last `
       + `ending ${initKlines[initKlines.length - 1].closeTime}`);
@@ -85,7 +86,7 @@ const processNewKlines = (klines) => {
       deals.push(openDeal);
       openDeal = null;
     } else {
-      if (moment() - openDeal.buyTime < windowTime) {
+      if (moment() - openDeal.buyTime < postHistoryWindow) {
         eraseWrite(`Waiting for sale at price: `
           + `${price}${getDots()}`
           + ` (${profit}%)`);

@@ -13,8 +13,8 @@ fprintf('Loaded %i data points\n', size(data, 1));
 %% Extract features
 windowSize = 24;
 postWindowSize = 5;
-topPercent = 5;
-bottomPercent = 2;
+topPercent = 2;
+bottomPercent = 1;
 
 fprintf('Begin extracting features\n');
 [x y] = featuresHistoryWindow(data, windowSize, ...
@@ -34,12 +34,13 @@ plotData(x, y);
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
 
+
 fprintf('\nProgram paused. Press enter to continue.\n');
 pause;
 
 %% Break into training, CV and test sets
 trainingSize = 0.7;
-cvSize = 0.15;
+cvSize = 0;
 testSize = 0.15;
 
 % Add intercept term to x
@@ -47,7 +48,8 @@ testSize = 0.15;
 x = [ones(m, 1) x];
 
 % Randomize the ids
-randIds = randperm(m);
+%randIds = randperm(m);
+randIds = 1:m;
 
 % Calculate the number of ids for each set
 trainNum = floor(size(randIds, 2) * trainingSize);
