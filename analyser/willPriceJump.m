@@ -14,14 +14,19 @@ function res = willPriceJump (origPrice, nextPrices, ...
   jumps = maxPrices >= topPrice;
 
   res = 0;
-  for i = 1:size(nextPrices, 1)
-    if (drops(i) == 1)
-      res = 0;
-      return;
-    endif
-    if (jumps(i) > drops(i))
+  ind = jumps - drops * 2;
+  firstJump = find(ind > 0);
+  firstDrop = find(ind < 0);
+  if (firstJump)
+    firstJump = firstJump(1, 1);
+    if (firstDrop)
+      firstDrop = firstDrop(1, 1);
+      if (firstJump < firstDrop)
+        res = 1;
+      endif
+    else
       res = 1;
-      return;
     endif
-  endfor
+  endif
+
 endfunction
