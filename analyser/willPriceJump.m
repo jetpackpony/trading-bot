@@ -5,8 +5,8 @@ function res = willPriceJump (origPrice, nextPrices, ...
 %   nextPrices = [[open high low close]] - trading prices
 %                              for multiple next hours
 
-  topPrice = origPrice * (1 + topPercent / 100);
-  bottomPrice = origPrice * (1 - bottomPercent / 100);
+  topPrice = origPrice * (1 + topPercent);
+  bottomPrice = origPrice * (1 - bottomPercent);
   minPrices = nextPrices(:, 3);
   maxPrices = nextPrices(:, 2);
 

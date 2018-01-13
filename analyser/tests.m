@@ -3,8 +3,8 @@
 %% willPriceJump
 windowSize = 5;
 postWindowSize = 5;
-topPercent = 5;
-bottomPercent = 2;
+topPercent = 0.05;
+bottomPercent = 0.02;
 
 % Price goes above topPercent
 nextPrices = [
@@ -80,8 +80,8 @@ endif
 %% featuresHistoryWindow
 windowSize = 2;
 postWindowSize = 2;
-topPercent = 2;
-bottomPercent = 1;
+topPercent = 0.02;
+bottomPercent = 0.01;
 % data is openTime and then OHLC columns
 data = [
   0 101 101 101 101;

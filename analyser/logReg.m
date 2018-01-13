@@ -13,8 +13,8 @@ fprintf('Loaded %i data points\n', size(data, 1));
 %% Extract features
 windowSize = 24;
 postWindowSize = 5;
-topPercent = 2;
-bottomPercent = 1;
+topPercent = 0.02;
+bottomPercent = 0.01;
 
 fprintf('Begin extracting features\n');
 [x, y, yWithGaps] = featuresHistoryWindow(data, windowSize, ...
