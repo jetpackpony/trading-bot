@@ -41,8 +41,15 @@ plotData(x, y, yWithGaps, 500);
 fprintf('Writing training set to trainingSet.csv\n');
 csvwrite('trainingSet.csv', [x y]);
 
-fprintf('\nProgram paused. Press enter to continue.\n');
-pause;
+%% Normalize inputs
+
+[x, mu, sigma] = featureNormalize(x);
+
+fprintf('Writing mu and sigma to normParams.csv\n');
+csvwrite('trainingSet.csv', [mu; sigma]);
+
+%fprintf('\nProgram paused. Press enter to continue.\n');
+%pause;
 
 %% Break into training, CV and test sets
 trainingSize = 0.7;
@@ -89,9 +96,9 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
 
 fprintf('Finished training classifier\n');
 fprintf('Cost at theta found by fminunc: %f\n', cost);
-fprintf('Theta: \n');
-fprintf(' %f \n', theta);
-fprintf('Writing theta to theta.csv\n');
+%fprintf('Theta: \n');
+%fprintf(' %f \n', theta);
+fprintf('Writing theta to theta.csv\n\n');
 csvwrite('theta.csv', theta);
 
 %% Check algorithm's accuracy
