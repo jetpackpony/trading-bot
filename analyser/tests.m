@@ -92,7 +92,7 @@ data = [
   0 106 106 106 106
 ];
 
-[x, y, yWithGaps] = featuresHistoryWindow(data, ...
+[x, y] = featuresHistoryWindow(data, ...
           windowSize, postWindowSize, topPercent, bottomPercent);
 
 if (size(x, 1) == 3)
@@ -117,6 +117,20 @@ if (y(3, 1) == 1)
   fprintf('.');
 else
   fprintf('\nThird result should be 1\n');
+endif
+
+%% getYWithGaps
+
+postWindowSize = 3;
+input  = [0; 1; 1; 1; 1; 1; 0; 1; 1; 1];
+output = [0; 1; 0; 0; 0; 1; 0; 0; 0; 1];
+
+yWithGaps = getYWithGaps(input, postWindowSize);
+
+if (yWithGaps == output)
+  fprintf('.');
+else
+  fprintf('\nShould be equals to output\n');
 endif
 
 fprintf('\nDone!\n');

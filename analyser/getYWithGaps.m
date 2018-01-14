@@ -1,20 +1,26 @@
 function yWithGaps = getYWithGaps(y, postWindowSize)
 
-  % Remove consecutive 1s from y
-  gapSize = postWindowSize;
-  yWithGaps = [];
-  for i = 1:size(y, 1)
-    if (y(i, 1) == 1)
-      if (gapSize >= postWindowSize)
-        yWithGaps(i, 1) = 1;
-        gapSize = 0;
-      else
-        yWithGaps(i, 1) = 0;
-        gapSize++;
-      endif
-    else
-      yWithGaps(i, 1) = 0;
-    endif
-  endfor
+  yWithGaps = ...
+      reduce(@(list, v) reducer(postWindowSize, list, v), y, []);
 
+endfunction
+
+function res = anyOnesInWindow(postWindowSize, list)
+  id = size(list, 1) - postWindowSize + 1;
+  if (id < 1)
+    id = 1;
+  endif
+  if (size(find(list(id:end) == 1), 1) > 0)
+    res = true;
+  else
+    res = false;
+  endif
+endfunction
+
+function res = reducer(postWindowSize, list, v)
+  if (anyOnesInWindow(postWindowSize, list))
+    res = [list; 0];
+  else
+    res = [list; v];
+  end
 endfunction
