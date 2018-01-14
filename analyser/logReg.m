@@ -5,30 +5,39 @@ clear ; close all; clc
 
 %% Load the data
 fprintf('Reading data from file...\n');
-data = csvread('rawData/2018-01-12_ETHBTC_1h_4_mon_.csv');
+%fileName = 'rawData/2018-01-12_ETHUSDT_1m_1_mon_.csv-features.csv';
+fileName = 'rawData/2018-01-12_ETHBTC_1h_4_mon_.csv';
+data = csvread(fileName);
 data = data(2:end, :);
 
-fprintf('Loaded %i data points\n', size(data, 1));
-
 %% Extract features
-windowSize = 24;
-postWindowSize = 5;
+tickInterval = 60;
+windowSize = 48;
+postWindowSize = 3;
 topPercent = 0.02;
 bottomPercent = 0.01;
 
-fprintf('Begin extracting features\n');
-[x, y, yWithGaps] = featuresHistoryWindow(data, windowSize, ...
+[x, y] = featuresHistoryWindow(data, windowSize, ...
                     postWindowSize, topPercent, bottomPercent);
 
+%x = data(:, 1:end-1);
+%y = data(:, end:end);
+
+yWithGaps = getYWithGaps(y, postWindowSize);
+
 totalNum = size(y, 1);
-days = ceil(totalNum / 24);
+days = ceil(totalNum / round(24 * 60 / tickInterval));
 positives = size(find(y == 1), 1);
 posWithGaps = size(find(yWithGaps == 1), 1);
 posPercent = positives / totalNum * 100;
 posWithGapsPercent = posWithGaps / totalNum * 100;
 dealsPerDay = posWithGaps / days;
 
-fprintf('Extracted features\n');
+fprintf('Features from: %s\n', fileName);
+fprintf('Window size: %i\n', windowSize);
+fprintf('Post-window size: %i\n', postWindowSize);
+fprintf('Top Percent: %i\n', topPercent);
+fprintf('Bottom Percent: %i\n', bottomPercent);
 fprintf('Total examples: %i\n', totalNum);
 fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
 fprintf('Pos examples with gaps: %i (%.2f%%)\n',...
@@ -37,9 +46,6 @@ fprintf('Min avg. deals per day: %i\n', dealsPerDay);
 
 fprintf('Plotting data\n');
 plotData(x, y, yWithGaps, 500);
-
-fprintf('Writing training set to trainingSet.csv\n');
-csvwrite('trainingSet.csv', [x y]);
 
 %% Normalize inputs
 
@@ -61,8 +67,8 @@ testSize = 0.15;
 x = [ones(m, 1) x];
 
 % Randomize the ids
-%randIds = randperm(m);
-randIds = 1:m;
+randIds = randperm(m);
+%randIds = 1:m;
 
 % Calculate the number of ids for each set
 trainNum = floor(size(randIds, 2) * trainingSize);
@@ -94,7 +100,6 @@ options = optimset('GradObj', 'on', 'MaxIter', 400);
   fminunc(@(t)(costFunction(t, xtrain, ytrain)), ...
                                   initial_theta, options);
 
-fprintf('Finished training classifier\n');
 fprintf('Cost at theta found by fminunc: %f\n', cost);
 %fprintf('Theta: \n');
 %fprintf(' %f \n', theta);

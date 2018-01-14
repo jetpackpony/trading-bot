@@ -1,4 +1,4 @@
-function [x, y, yWithGaps] = featuresHistoryWindow(data, ...
+function [x, y] = featuresHistoryWindow(data, ...
             windowSize, postWindowSize, topPercent, bottomPercent)
 
 % Extracts features from data by specified history window.
@@ -32,23 +32,6 @@ function [x, y, yWithGaps] = featuresHistoryWindow(data, ...
       curWindow = [curWindow(1, 2:end) data(i, closePriceIndex)];
     else
       curWindow(end+1) = data(i, closePriceIndex);
-    endif
-  endfor
-
-  % Remove consecutive 1s from y
-  gapSize = postWindowSize;
-  yWithGaps = [];
-  for i = 1:size(y, 1)
-    if (y(i, 1) == 1)
-      if (gapSize >= postWindowSize)
-        yWithGaps(i, 1) = 1;
-        gapSize = 0;
-      else
-        yWithGaps(i, 1) = 0;
-        gapSize++;
-      endif
-    else
-      yWithGaps(i, 1) = 0;
     endif
   endfor
 
