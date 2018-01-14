@@ -6,9 +6,9 @@ clear ; close all; clc
 %% Load the data
 fprintf('Reading data from file...\n');
 %fileName = 'rawData/2018-01-12_ETHUSDT_1m_1_mon_.csv-features.csv';
-fileName = 'rawData/2018-01-12_ETHBTC_1h_4_mon_.csv';
+%fileName = 'rawData/2018-01-12_ETHBTC_1h_4_mon_.csv';
+fileName = 'rawData/2018-01-14_ETHBTC_1h_4_mon_.csv-features.csv';
 data = csvread(fileName);
-data = data(2:end, :);
 
 %% Extract features
 tickInterval = 60;
@@ -17,16 +17,17 @@ postWindowSize = 3;
 topPercent = 0.02;
 bottomPercent = 0.01;
 
-[x, y] = featuresHistoryWindow(data, windowSize, ...
-                    postWindowSize, topPercent, bottomPercent);
+%data = data(2:end, :);
+%[x, y] = featuresHistoryWindow(data, windowSize, ...
+%                    postWindowSize, topPercent, bottomPercent);
 
-%x = data(:, 1:end-1);
-%y = data(:, end:end);
+x = data(:, 1:end-1);
+y = data(:, end:end);
 
 yWithGaps = getYWithGaps(y, postWindowSize);
 
 totalNum = size(y, 1);
-days = ceil(totalNum / round(24 * 60 / tickInterval));
+days = (totalNum * tickInterval) / (24 * 60);
 positives = size(find(y == 1), 1);
 posWithGaps = size(find(yWithGaps == 1), 1);
 posPercent = positives / totalNum * 100;
@@ -42,6 +43,7 @@ fprintf('Total examples: %i\n', totalNum);
 fprintf('Pos examples: %i (%.2f%%)\n', positives, posPercent);
 fprintf('Pos examples with gaps: %i (%.2f%%)\n',...
                                 posWithGaps, posWithGapsPercent);
+fprintf('Days in dataset: %i\n', days);
 fprintf('Min avg. deals per day: %i\n', dealsPerDay);
 
 fprintf('Plotting data\n');

@@ -5,7 +5,7 @@ function plotData(x, y, yWithGaps, n)
   minPrice = min(prices);
   maxPrice = max(prices);
 
-  posRes = find(y(1:n) == 1);
+  posRes = find(yWithGaps(1:n) == 1);
   fprintf('Plotting positive examples: %i\n', size(find(y(1:n) == 1), 1));
   fprintf('Plotting positive examples with gaps: %i\n', size(posRes, 1));
 
