@@ -16,4 +16,7 @@ function [theta] = logReg(xtrain, ytrain)
   %fprintf('Theta: \n');
   %fprintf(' %f \n', theta);
 
+  fprintf('Writing theta to theta.csv\n\n');
+  csvwrite('theta.csv', theta);
+
 endfunction

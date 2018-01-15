@@ -51,7 +51,8 @@ plotData(x, y, yWithGaps, 500);
 
 %% Add polynomial features
 
-x = polyFeatures(x, 5);
+% THis is only for logistic regression
+%x = polyFeatures(x, 5);
 
 %% Normalize inputs
 
@@ -65,7 +66,7 @@ csvwrite('trainingSet.csv', [mu; sigma]);
 
 %% Break into training, CV and test sets
 trainingSize = 0.7;
-cvSize = 0;
+cvSize = 0.15;
 testSize = 0.15;
 
 % Add intercept term to x
@@ -95,13 +96,53 @@ fprintf('train (%i), cv (%i) and test (%i)\n', ...
 
 %% Train the classifier
 
-theta = logReg(xtrain, ytrain);
+%C = 1; sigma = 0.1;
+[C, sigma] = chooseParams(xtrain, ytrain, xcv, ycv, ...
+                      topPercent, bottomPercent, dealsPerDay);
+fprintf('Selected params C: %.2f, sigma: %.2f\n', C, sigma);
+model= svmTrain(xtrain, ytrain, C,...
+                  @(x1, x2) gaussianKernel(x1, x2, sigma));
+fprintf('Writing model to svmModel.mat\n\n');
+save 'svmModel.mat' model;
 
-fprintf('Writing theta to theta.csv\n\n');
-csvwrite('theta.csv', theta);
+%C = 1;
+%model = svmTrain(x, y, C, @linearKernel, 1e-3, 20);
+%load 'svmModel.mat';
+
 
 %% Check algorithm's accuracy
 % Compute accuracy
 
-checkAccuracy(xtrain, ytrain, xtest, ytest, xcv, ycv, ...
-                            theta, topPercent, bottomPercent);
+%checkAccuracy(xtrain, ytrain, xtest, ytest, xcv, ycv, ...
+%                            theta, topPercent, bottomPercent);
+
+
+% Compute accuracy
+ptrain = svmPredict(model, xtrain);
+accTrain = mean(double(ptrain == ytrain)) * 100;
+fprintf('Training data accuracy: %.2f%%\n', accTrain);
+fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
+            size(find(ptrain == 1), 1), size(ptrain, 1), ...
+            size(find(ytrain == 1), 1), size(ytrain, 1));
+
+[precision, recall, fScore] = precisionRecall(ptrain, ytrain);
+fprintf('Precision (truePos / allPos): %.2f%%\n', precision * 100);
+fprintf('Recall (truePos / actualPos): %.2f%%\n', recall * 100);
+fprintf('Fscore 2 * P * R / (P + R): %.2f%%\n\n', fScore * 100);
+
+ptest = svmPredict(model, xtest);
+accTest = mean(double(ptest == ytest)) * 100;
+fprintf('Test data accuracy: %.2f%%\n', accTest);
+fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
+            size(find(ptest == 1), 1), size(ptest, 1), ...
+            size(find(ytest == 1), 1), size(ytest, 1));
+
+[precision, recall, fScore] = precisionRecall(ptest, ytest);
+fprintf('Precision (truePos / allPos): %.2f%%\n', precision * 100);
+fprintf('Recall (truePos / actualPos): %.2f%%\n', recall * 100);
+fprintf('Fscore 2 * P * R / (P + R): %.2f%%\n\n', fScore * 100);
+
+expProfit = expectedProfit(topPercent, bottomPercent, ...
+                                        precision, recall);
+fprintf('Expected profit per deal: %.2f%%\n', expProfit * 100);
+keyboard;
