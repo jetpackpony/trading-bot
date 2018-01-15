@@ -46,8 +46,8 @@ fprintf('Pos examples with gaps: %i (%.2f%%)\n',...
 fprintf('Days in dataset: %i\n', days);
 fprintf('Min avg. deals per day: %i\n', dealsPerDay);
 
-fprintf('Plotting data\n');
-plotData(x, y, yWithGaps, 500);
+%fprintf('Plotting data\n');
+%plotData(x, y, yWithGaps, 500);
 
 %% Add polynomial features
 
@@ -74,8 +74,8 @@ testSize = 0.15;
 x = [ones(m, 1) x];
 
 % Randomize the ids
-randIds = randperm(m);
-%randIds = 1:m;
+%randIds = randperm(m);
+randIds = 1:m;
 
 % Calculate the number of ids for each set
 trainNum = floor(size(randIds, 2) * trainingSize);
@@ -100,10 +100,15 @@ fprintf('train (%i), cv (%i) and test (%i)\n', ...
 [C, sigma] = chooseParams(xtrain, ytrain, xcv, ycv, ...
                       topPercent, bottomPercent, dealsPerDay);
 fprintf('Selected params C: %.2f, sigma: %.2f\n', C, sigma);
-model= svmTrain(xtrain, ytrain, C,...
-                  @(x1, x2) gaussianKernel(x1, x2, sigma));
+%model= svmTrain(xtrain, ytrain, C,...
+%                  @(x1, x2) gaussianKernel(x1, x2, sigma));
+
+model = svmtrain(ytrain, xtrain, ...
+                sprintf('-c %f -g %f -q', C, sigma));
+
+
 fprintf('Writing model to svmModel.mat\n\n');
-save 'svmModel.mat' model;
+save 'svmModel.mat' C, sigma, model;
 
 %C = 1;
 %model = svmTrain(x, y, C, @linearKernel, 1e-3, 20);
@@ -116,9 +121,8 @@ save 'svmModel.mat' model;
 %checkAccuracy(xtrain, ytrain, xtest, ytest, xcv, ycv, ...
 %                            theta, topPercent, bottomPercent);
 
-
 % Compute accuracy
-ptrain = svmPredict(model, xtrain);
+[ptrain] = svmpredict(ytrain, xtrain, model, '-q');
 accTrain = mean(double(ptrain == ytrain)) * 100;
 fprintf('Training data accuracy: %.2f%%\n', accTrain);
 fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
@@ -126,11 +130,12 @@ fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
             size(find(ytrain == 1), 1), size(ytrain, 1));
 
 [precision, recall, fScore] = precisionRecall(ptrain, ytrain);
-fprintf('Precision (truePos / allPos): %.2f%%\n', precision * 100);
+fprintf('Precision (truePos / allPos): %.2f%%\n', ...
+                                               precision * 100);
 fprintf('Recall (truePos / actualPos): %.2f%%\n', recall * 100);
 fprintf('Fscore 2 * P * R / (P + R): %.2f%%\n\n', fScore * 100);
 
-ptest = svmPredict(model, xtest);
+[ptest] = svmpredict(ytest, xtest, model, '-q');
 accTest = mean(double(ptest == ytest)) * 100;
 fprintf('Test data accuracy: %.2f%%\n', accTest);
 fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
@@ -138,11 +143,16 @@ fprintf('Pos examples: %i/%i (actual %i/%i)\n', ...
             size(find(ytest == 1), 1), size(ytest, 1));
 
 [precision, recall, fScore] = precisionRecall(ptest, ytest);
-fprintf('Precision (truePos / allPos): %.2f%%\n', precision * 100);
+fprintf('Precision (truePos / allPos): %.2f%%\n',...
+                                               precision * 100);
 fprintf('Recall (truePos / actualPos): %.2f%%\n', recall * 100);
 fprintf('Fscore 2 * P * R / (P + R): %.2f%%\n\n', fScore * 100);
 
-expProfit = expectedProfit(topPercent, bottomPercent, ...
-                                        precision, recall);
+expProfit = expectedProfit(topPercent, bottomPercent,...
+                                      precision, recall);
+profitPerDay = profitPerDay(size(find(ptest == 1), 1), ...
+          size(find(ytest == 1), 1), dealsPerDay, expProfit);
 fprintf('Expected profit per deal: %.2f%%\n', expProfit * 100);
+fprintf('Expected profit per day: %.2f%%\n', profitPerDay * 100);
+
 keyboard;

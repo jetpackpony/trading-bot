@@ -5,8 +5,16 @@ function [precision, recall, fScore] = precisionRecall(p, a)
   truePos = size(find(p(find(a == 1)) == 1), 1);
   actualPos = size(find(a == 1), 1);
   allPos = size(find(p == 1), 1);
-  precision = truePos / allPos;
+  if (allPos > 0)
+    precision = truePos / allPos;
+  else
+    precision = 0;
+  end
   recall = truePos / actualPos;
-  fScore = 2 * precision * recall / (precision + recall);
+  if (precision + recall > 0)
+    fScore = 2 * precision * recall / (precision + recall);
+  else
+    fScore = 0;
+  end
 
 endfunction
