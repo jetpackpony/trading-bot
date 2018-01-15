@@ -68,7 +68,7 @@ async function runThings() {
   console.log('Reordering output csv file');
   csvReorder({
     input: tmpFileName,
-    output: path.join(__dirname, 'analyser', 'rawData', fileName),
+    output: path.join(config.get('RAW_DATA_PATH'), fileName),
     sort: 'openTime',
     type: 'number',
     descending: false,

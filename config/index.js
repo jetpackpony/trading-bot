@@ -13,7 +13,10 @@ nconf
       `${process.env.NODE_ENV || 'development'}.config.json`
     )
   })
-  .defaults({});
+  .defaults({
+    'RAW_DATA_PATH': path.join(
+      __dirname, '..', 'analyser', 'rawData')
+  });
 
 // Check for required settings
 checkConfig('API_KEY');
