@@ -1,0 +1,7 @@
+{
+  "tickInterval": 60,
+  "inputFile": "analyser/rawData/2018-01-14_ETHBTC_1h_4_mon_.csv",
+  "windowSize": 48,
+  "postWindowSizeRange": [3, 4],
+  "percentsRange": [0.01, 0.02]
+}

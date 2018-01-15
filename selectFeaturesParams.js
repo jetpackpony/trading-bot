@@ -4,51 +4,37 @@ const path = require('path');
 const { round } = require('math-precision');
 const { rangeStep } = require('./featuresUtils');
 const { extractFeatures } = require('./featuresHistoryWindow');
+const { config, loadScriptConfig, checkArg } = require('./config');
 require('console.table');
 const {
   eraseWrite,
   consoleReset
 } = require('./helpers/ansiConsole');
 
-const rawDataPath = path.join('analyser', 'rawData');
+loadScriptConfig('selectFeaturesParams');
+checkArg('tickInterval');
+checkArg('inputFile');
+checkArg('windowSize');
+checkArg('postWindowSizeRange');
+checkArg('percentsRange');
 
 // The size of each data point in minutes
-const tickInterval = 60;
-const inputFile = path.join('analyser', 'rawData',
-                     '2018-01-12_ETHBTC_1h_4_mon_.csv');
-/*
-const tickInterval = 1;
-const inputFile = path.join('analyser', 'rawData',
-                    '2018-01-12_ETHUSDT_1m_1_mon_.csv');
-*/
+const tickInterval = config.get('tickInterval');
+const inputFile = config.get('inputFile');
 const outputFile = `${inputFile}-features.csv`;
 
-/*
- * Setup for hour-based data
- */
-const windowSize = 48;
-const postWindowSizes = [1, 2];
-const percents = [0.01, 0.02];
-/*
- * Setup for minute-based data
- *
-const windowSize = 10 * 60;
-const postWindowSizes = [3 * 60, 4 * 60];
-const percents = [0.01, 0.02];
-*/
-
-// Calculate values in ranges
-let windowRanges = rangeStep(
-  round(60 / tickInterval), ...postWindowSizes);
-let percentRanges =
-  R.map(R.flip(round)(2), rangeStep(0.01, ...percents));
+// Calculate values from ranges
+let windowSizeValues = rangeStep(round(60 / tickInterval),
+                            ...config.get('postWindowSizeRange'));
+let percentValues = R.map(R.flip(round)(2),
+                rangeStep(0.01, ...config.get('percentsRange')));
 
 // Assemble parameter combinations
 let combs = R.compose(
-  R.map(R.prepend(windowSize)),
+  R.map(R.prepend(config.get('windowSize'))),
   R.map((v) => R.append(R.last(v), v)),
   R.xprod
-)(windowRanges, percentRanges);
+)(windowSizeValues, percentValues);
 
 // Add combinactions with topPercent = 2 * bottomPercent
 combs = R.concat(

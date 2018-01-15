@@ -18,7 +18,8 @@ extractFeatures(
   config.get('windowSize'),
   config.get('postWindowSize'),
   config.get('topPercent'),
-  config.get('bottomPercent')
+  config.get('bottomPercent'),
+  true  // tell it to write data
 )
   .then((res) => {
     console.log(res);

@@ -18,18 +18,23 @@ const extractFeatures =
     windowSize,
     postWindowSize,
     topPercent,
-    bottomPercent
+    bottomPercent,
+    writeData = false
   ) => {
     return new Promise((resolve, reject) => {
       const convWindow =
         convertWindow(windowSize,
           willPriceJump(topPercent, bottomPercent));
 
-      const writeCSVStream = csv.createWriteStream();
-      const writableStream = fs.createWriteStream(outputFile);
-      writeCSVStream.pipe(writableStream);
-      const writeToCSV =
-        writeCSVStream.write.bind(writeCSVStream);
+      let writeCSVStream;
+      let writeToCSV;
+      if (writeData) {
+        writeCSVStream = csv.createWriteStream();
+        const writableStream = fs.createWriteStream(outputFile);
+        writeCSVStream.pipe(writableStream);
+        writeToCSV =
+          writeCSVStream.write.bind(writeCSVStream);
+      }
 
       let curWindow = [];
       let totalExamples = 0;
@@ -46,11 +51,15 @@ const extractFeatures =
             totalExamples++;
             ys.push(R.last(wind));
             (R.last(wind) === 1) ? posExamples++ : null;
-            writeToCSV(wind);
+            if (writeData) {
+              writeToCSV(wind);
+            }
           }
         })
         .on("end", function(){
-          writeCSVStream.end();
+          if (writeData) {
+            writeCSVStream.end();
+          }
           const yWithGaps = getYWithGaps(postWindowSize, ys);
           const posWithGaps = countOnes(yWithGaps);
           const dealsPerDay =
