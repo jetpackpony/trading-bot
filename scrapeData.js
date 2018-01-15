@@ -2,14 +2,19 @@ const R = require('ramda');
 const fs = require('fs');
 const csv = require('fast-csv');
 const csvReorder = require('csv-reorder');
-const { getKlines } = require('../api');
-const { config, checkArg } = require('../config');
+const { getKlines } = require('./api');
+const { config, loadScriptConfig, checkArg } = require('./config');
 const moment = require('moment');
 const path = require('path');
 
-const symbol = 'ETHBTC';
-const interval = '1m';
-const timeMonths = 1;
+loadScriptConfig('scrapeData');
+checkArg('symbol');
+checkArg('interval');
+checkArg('timeMonths');
+
+const symbol = config.get('symbol');
+const interval = config.get('interval');
+const timeMonths = config.get('timeMonths');
 const tmpFileName = 'tmp.csv';
 const fileName = [
   moment().format("YYYY-MM-DD"),
@@ -78,8 +83,6 @@ async function runThings() {
     .catch(error => {
       console.error(error);
     });
-
-
 }
 
 runThings();
