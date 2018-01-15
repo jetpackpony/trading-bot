@@ -1,36 +1,24 @@
 const R = require('ramda');
 const path = require('path');
 const { extractFeatures } = require('./featuresHistoryWindow');
+const { config, loadScriptConfig, checkArg } = require('./config');
 
-const rawDataPath = path.join('analyser', 'rawData');
-
-// The size of each data point in minutes
-const tickInterval = 60;
-const inputFile = path.join('analyser', 'rawData',
-                     '2018-01-12_ETHBTC_1h_4_mon_.csv');
-/*
-const tickInterval = 1;
-const inputFile = path.join('analyser', 'rawData',
-                    '2018-01-12_ETHUSDT_1m_1_mon_.csv');
-*/
-const outputFile = `${inputFile}-features.csv`;
-
-/*
- * Setup for hour-based data
- */
-const windowSize = 48;
-const postWindowSize = 3;
-const topPercent = 0.02;
-const bottomPercent = 0.01;
+loadScriptConfig('extractFeatures');
+checkArg('tickInterval');
+checkArg('inputFile');
+checkArg('windowSize');
+checkArg('postWindowSize');
+checkArg('topPercent');
+checkArg('bottomPercent');
 
 extractFeatures(
-  inputFile,
-  outputFile,
-  tickInterval,
-  windowSize,
-  postWindowSize,
-  topPercent,
-  bottomPercent
+  config.get('inputFile'),
+  `${config.get('inputFile')}-features.csv`,
+  config.get('tickInterval'),
+  config.get('windowSize'),
+  config.get('postWindowSize'),
+  config.get('topPercent'),
+  config.get('bottomPercent')
 )
   .then((res) => {
     console.log(res);

@@ -1,0 +1,8 @@
+{
+  "tickInterval": 60,
+  "inputFile": "2018-01-14_ETHBTC_1h_4_mon_.csv",
+  "windowSize": 48,
+  "postWindowSize": 3,
+  "topPercent": 0.02,
+  "bottomPercent": 0.01
+}

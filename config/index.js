@@ -30,7 +30,19 @@ function checkArg (argName) {
   }
 }
 
+function loadScriptConfig (scriptName) {
+  nconf
+    .file({
+      file: path.join(
+        __dirname,
+        'scriptConfig',
+        `${scriptName}.json`
+      )
+    });
+}
+
 module.exports = {
   config: nconf,
-  checkArg
+  checkArg,
+  loadScriptConfig
 };
