@@ -49,6 +49,10 @@ fprintf('Min avg. deals per day: %i\n', dealsPerDay);
 fprintf('Plotting data\n');
 plotData(x, y, yWithGaps, 500);
 
+%% Add polynomial features
+
+x = polyFeatures(x, 5);
+
 %% Normalize inputs
 
 [x, mu, sigma] = featureNormalize(x);
