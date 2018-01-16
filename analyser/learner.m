@@ -2,18 +2,20 @@
 
 %% Initialization
 clear ; close all; clc
+page_screen_output(0);
 
 %% Load the data
 fprintf('Reading data from file...\n');
+%fflush(stdout);
 %fileName = 'rawData/2018-01-12_ETHUSDT_1m_1_mon_.csv-features.csv';
 %fileName = 'rawData/2018-01-12_ETHBTC_1h_4_mon_.csv';
-fileName = 'rawData/2018-01-14_ETHBTC_1h_4_mon_.csv-features.csv';
+fileName = 'rawData/2018-01-15_ETHBTC_1m_6_mon_slice_last_7k.csv-features.csv';
 data = csvread(fileName);
 
 %% Extract features
-tickInterval = 60;
-windowSize = 48;
-postWindowSize = 3;
+tickInterval = 1;
+windowSize = 600;
+postWindowSize = 60;
 topPercent = 0.02;
 bottomPercent = 0.01;
 
@@ -96,7 +98,7 @@ fprintf('train (%i), cv (%i) and test (%i)\n', ...
 
 %% Train the classifier
 
-%C = 1; sigma = 0.1;
+%C = 3; sigma = 1;
 [C, sigma] = chooseParams(xtrain, ytrain, xcv, ycv, ...
                       topPercent, bottomPercent, dealsPerDay);
 fprintf('Selected params C: %.2f, sigma: %.2f\n', C, sigma);
