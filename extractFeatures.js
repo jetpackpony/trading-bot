@@ -13,7 +13,12 @@ checkArg('bottomPercent');
 
 extractFeatures(
   config.get('inputFile'),
-  `${config.get('inputFile')}-features.csv`,
+  `${config.get('inputFile')}-features-`
+  + `w${config.get('windowSize')}`
+  + `p${config.get('postWindowSize')}`
+  + `tp${config.get('topPercent')}`
+  + `bp${config.get('bottomPercent')}`
+  + `.csv`,
   config.get('tickInterval'),
   config.get('windowSize'),
   config.get('postWindowSize'),
