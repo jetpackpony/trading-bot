@@ -123,10 +123,10 @@ fprintf('\nTraining Neural Network... \n')
 
 %  After you have completed the assignment, change the MaxIter to a larger
 %  value to see how more training helps.
-options = optimset('MaxIter', 200);
+options = optimset('MaxIter', 5000);
 
 %  You should also try different values of lambda
-lambda = 0.1;
+lambda = 0.03;
 
 % Create "short hand" for the cost function to be minimized
 costFunction = @(p) nnCostFunction(p, ...
@@ -145,6 +145,10 @@ theta1 = reshape(nn_params(1:hidden_layer_size * (input_layer_size + 1)), ...
 
 theta2 = reshape(nn_params((1 + (hidden_layer_size * (input_layer_size + 1))):end), ...
                  num_labels, (hidden_layer_size + 1));
+
+
+fprintf('Writing thetas to nnParams.csv\n\n');
+csvwrite('nnParams.csv', nn_params);
 
 %% ================= Part 10: Implement Predict =================
 %  After training the neural network, we would like to use it to predict
