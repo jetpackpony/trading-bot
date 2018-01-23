@@ -27,7 +27,7 @@ const start =
   };
 
 const makeTicker =
-  ({ symbol, interval, limit }) => {
+  async ({ symbol, interval, limit }) => {
     const emitter = new EventEmitter();
     emitter.start = R.partial(start, [{ symbol, interval, limit, emitter }]);
     return emitter;

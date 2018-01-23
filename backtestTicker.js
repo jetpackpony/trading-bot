@@ -42,7 +42,7 @@ const start =
   };
 
 const makeTicker =
-  ({ symbol, interval, limit, fileName }) => {
+  async ({ symbol, interval, limit, fileName }) => {
     const emitter = new EventEmitter();
     emitter.start = R.partial(start, [{
       symbol, interval, limit,
