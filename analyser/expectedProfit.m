@@ -1,0 +1,6 @@
+function expProfit = expectedProfit(topPercent, ...
+                              bottomPercent, precision, recall)
+
+expProfit = (topPercent * precision) - ...
+                      (bottomPercent * (1 - precision));
+endfunction

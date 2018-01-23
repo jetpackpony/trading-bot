@@ -6,17 +6,23 @@
   "dependencies": {
     "ansi": "^0.3.1",
     "binance": "https://github.com/jetpackpony/binance/tarball/cef1c651d3aa3d9e0828085626c4e1844a34a6e1",
+    "chai": "^4.1.2",
+    "console.table": "^0.9.1",
     "csv-reorder": "^0.1.1",
     "fast-csv": "^2.4.1",
     "inquirer": "^5.0.0",
+    "keras-js": "^1.0.2",
     "math-precision": "^1.0.4",
+    "mathjs": "^3.19.0",
+    "mocha": "^4.1.0",
     "moment": "^2.20.1",
     "nconf": "^0.10.0",
-    "ramda": "^0.25.0"
+    "ramda": "^0.25.0",
+    "sleep": "^5.1.1"
   },
   "devDependencies": {},
   "scripts": {
-    "test": "mocha test"
+    "test": "nodemon --exec 'mocha -R min --recursive' test"
   },
   "repository": {
     "type": "git",

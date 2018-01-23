@@ -59,3 +59,7 @@ typings/
 
 # bot config stuff
 *.config.json
+
+# Octave/Matlab files
+*.mat
+octave-workspace

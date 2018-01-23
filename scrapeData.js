@@ -2,15 +2,28 @@ const R = require('ramda');
 const fs = require('fs');
 const csv = require('fast-csv');
 const csvReorder = require('csv-reorder');
-const { getKlines } = require('../api');
-const { config, checkArg } = require('../config');
+const { getKlines } = require('./api');
+const { config, loadScriptConfig, checkArg } = require('./config');
 const moment = require('moment');
+const path = require('path');
 
-const symbol = 'ETHBTC';
-const interval = '1h';
-const timeMonths = 6;
+loadScriptConfig('scrapeData');
+checkArg('symbol');
+checkArg('interval');
+checkArg('timeMonths');
+
+const symbol = config.get('symbol');
+const interval = config.get('interval');
+const timeMonths = config.get('timeMonths');
 const tmpFileName = 'tmp.csv';
-const fileName = 'test.csv';
+const fileName = [
+  moment().format("YYYY-MM-DD"),
+  symbol,
+  interval,
+  timeMonths,
+  'mon',
+  '.csv'
+].join('_');
 
 const csvStream = csv.createWriteStream({headers: true});
 const writableStream = fs.createWriteStream(tmpFileName);
@@ -21,7 +34,9 @@ csvStream.pipe(writableStream);
 const writeToCSV = csvStream.write.bind(csvStream);
 
 const isDataCorrect = R.pathOr(false, ['0', 'openTime']);
-const fromTime = moment().add(timeMonths * -1, 'months').valueOf();
+const fromTime = moment()
+        .add(timeMonths * 30 * 24 * 60 * -1, 'minutes')
+        .valueOf();
 const processLoad =
   (data) => {
     if (!isDataCorrect(data)) {
@@ -55,7 +70,7 @@ async function runThings() {
   console.log('Reordering output csv file');
   csvReorder({
     input: tmpFileName,
-    output: fileName,
+    output: path.join(config.get('RAW_DATA_PATH'), fileName),
     sort: 'openTime',
     type: 'number',
     descending: false,
@@ -70,8 +85,6 @@ async function runThings() {
     .catch(error => {
       console.error(error);
     });
-
-
 }
 
 runThings();
