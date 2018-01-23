@@ -34,7 +34,9 @@ csvStream.pipe(writableStream);
 const writeToCSV = csvStream.write.bind(csvStream);
 
 const isDataCorrect = R.pathOr(false, ['0', 'openTime']);
-const fromTime = moment().add(timeMonths * -1, 'months').valueOf();
+const fromTime = moment()
+        .add(timeMonths * 30 * 24 * 60 * -1, 'minutes')
+        .valueOf();
 const processLoad =
   (data) => {
     if (!isDataCorrect(data)) {
