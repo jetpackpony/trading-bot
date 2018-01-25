@@ -2,14 +2,14 @@ const R = require('ramda');
 const fs = require('fs');
 const { round, floor } = require('math-precision');
 
-const makeTrader = async (logId, timeToWait, predictor) => {
+const makeTrader = async ({ logId, timeToWait, predictor, comission }) => {
 
   let logFileName = `logs/dealsLog-${logId}.log`;
   let deals = { closed: [], open: null };
   return {
     handleData: async (klines) => {
       const pred = await predictor.predict(klines);
-      deals = await handlePrediction(timeToWait, pred, deals);
+      deals = await handlePrediction(timeToWait, comission, pred, deals);
       fs.writeFileSync(logFileName, JSON.stringify(deals, null, 2));
     },
     getDeals: () => deals
@@ -18,12 +18,12 @@ const makeTrader = async (logId, timeToWait, predictor) => {
 
 module.exports = makeTrader;
 
-const handlePrediction = async (timeToWait, prediction, deals) => {
+const handlePrediction = async (timeToWait, comission, prediction, deals) => {
   let { price, trend, time } = prediction;
   let { closed, open } = deals;
   if (open) {
     let profit = price / open.buyPrice - 1;
-    open = updateDeal(open, price, profit, time);
+    open = updateDeal(comission, open, price, profit, time);
     if (time - open.checkTime >= timeToWait) {
       if (trend === 'down') {
         console.log(`Got down trend prediction, selling: ${price} (${profit})`);
@@ -54,10 +54,12 @@ const handlePrediction = async (timeToWait, prediction, deals) => {
   return { closed, open };
 };
 
-const updateDeal = (deal, price, profit, time) => {
+const updateDeal = (comission, deal, price, profit, time) => {
   deal.sellPrice = price;
   deal.profit = profit;
   deal.sellTime = time;
+  deal.profitWithComission = (deal.sellPrice * (1 - comission)) /
+                               (deal.buyPrice * (1 + comission)) - 1;
   return deal;
 };
 
