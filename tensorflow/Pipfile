@@ -13,6 +13,8 @@ pandas = "*"
 matplotlib = "*"
 keras = "*"
 "h5py" = "*"
+ta-lib = "*"
+python-binance = "*"
 
 
 [dev-packages]
