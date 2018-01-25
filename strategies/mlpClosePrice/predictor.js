@@ -11,9 +11,9 @@ const normalize = (input) => {
   return input.map((i) => (i - mu) / sigma);
 };
 
-const initModel = () => {
+const initModel = (modelFile) => {
   const model = new keras.Model({
-    filepath: 'tensorflow/t1m;w60;pw20;l1128;d10.5;l232;d20.5;lr0.01;dec0.0.bin',
+    filepath: modelFile,
     filesystem: true
   });
 
@@ -32,8 +32,11 @@ const initModel = () => {
     });
 };
 
-const makePredictor = async () => {
-  const isGoingToGrow = await initModel();
+const makePredictor = async ({ modelFile }) => {
+  if (R.any(R.isNil, [modelFile])) {
+    throw new Error(`Not all args are setup ${JSON.stringify([modelFile], null, 2)}`);
+  }
+  const isGoingToGrow = await initModel(modelFile);
 
   return {
     predict: async (klines) => {

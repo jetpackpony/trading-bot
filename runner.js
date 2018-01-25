@@ -3,35 +3,42 @@ const moment = require('moment');
 const makeRealTicker = require('./realTicker');
 const makeBacktestTicker = require('./backtestTicker');
 const makeTrader = require('./trader');
-const makePredictor = require('./strategies/mlpClosePrice/predictor');
-const makeHandler = require('./strategies/mlpClosePrice/predictionHandler');
+const argv = require('minimist')(process.argv.slice(2));
 
-const symbol = 'ETHBTC';
-const interval = '1m';
-const postWindowSize = 20;
-const limit = 60;
-const comission = 0.0005;
-const fileName = "analyser/rawData/2018-01-18_ETHBTC_1m_0.12_mon_.csv";
-//const fileName = "analyser/rawData/2018-01-15_ETHBTC_1m_6_mon_slice_last_50k.csv";
-//const tickerType = 'real';
-//const logId = moment().valueOf();
-const tickerType = 'backtest';
-const logId = 'test';
+const args = R.merge(
+  {
+    strategy: null,
+    tickerType: 'backtest',
+    symbol: null,
+    interval: '1m',
+    limit: null,
+    comission: 0.0005
+  },
+  argv
+);
+
+if (R.any(R.isNil, args)) {
+  throw new Error(`Not all args are setup ${JSON.stringify(args, null, 2)}`);
+}
+
+const makePredictor = require(`./strategies/${args.strategy}/predictor`);
+const makeHandler = require(`./strategies/${args.strategy}/predictionHandler`);
+const logId = moment().valueOf();
 
 async function run() {
-  const predictor = await makePredictor();
+  const predictor = await makePredictor(args);
   const trader = await makeTrader({
     logId,
     predictor,
-    handlePrediction: makeHandler(postWindowSize * 60 * 1000, comission)
+    handlePrediction: makeHandler(args)
   });
 
-  if (tickerType === 'backtest') {
-    const ticker = await makeBacktestTicker({ limit, fileName });
+  if (args.tickerType === 'backtest') {
+    const ticker = await makeBacktestTicker(args);
     await ticker.start(trader.handleData);
     console.log(JSON.stringify(getStats(trader.getDeals()), null, 2));
   } else {
-    const ticker = await makeRealTicker({ symbol, interval, limit });
+    const ticker = await makeRealTicker(args);
     ticker.start();
     ticker.on('data', trader.handleData);
   }
