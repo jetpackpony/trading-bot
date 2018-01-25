@@ -4,6 +4,7 @@ const makeRealTicker = require('./realTicker');
 const makeBacktestTicker = require('./backtestTicker');
 const makeTrader = require('./trader');
 const makePredictor = require('./strategies/frodo/predictor');
+const { handlePrediction } = require('./strategies/frodo/trader');
 
 const symbol = 'ETHBTC';
 const interval = '1m';
@@ -22,8 +23,7 @@ async function run() {
   const trader = await makeTrader({
     logId,
     predictor,
-    comission,
-    timeToWait: postWindowSize * 60 * 1000
+    handlePrediction: handlePrediction(postWindowSize * 60 * 1000, comission),
   });
 
   if (tickerType === 'backtest') {
