@@ -4,7 +4,7 @@ const makeRealTicker = require('./realTicker');
 const makeBacktestTicker = require('./backtestTicker');
 const makeTrader = require('./trader');
 const makePredictor = require('./strategies/mlpClosePrice/predictor');
-const { handlePrediction } = require('./strategies/mlpClosePrice/trader');
+const makeHandler = require('./strategies/mlpClosePrice/predictionHandler');
 
 const symbol = 'ETHBTC';
 const interval = '1m';
@@ -23,7 +23,7 @@ async function run() {
   const trader = await makeTrader({
     logId,
     predictor,
-    handlePrediction: handlePrediction(postWindowSize * 60 * 1000, comission),
+    handlePrediction: makeHandler(postWindowSize * 60 * 1000, comission)
   });
 
   if (tickerType === 'backtest') {

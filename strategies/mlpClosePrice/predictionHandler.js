@@ -46,7 +46,9 @@ const updateDeal = (comission, deal, price, profit, time) => {
   return deal;
 };
 
-module.exports = { handlePrediction };
+module.exports = (timeToWait, comission) => {
+  return handlePrediction(timeToWait, comission)
+};
 
 if (require.main === module) {
   async function run() {
