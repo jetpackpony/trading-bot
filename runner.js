@@ -3,8 +3,8 @@ const moment = require('moment');
 const makeRealTicker = require('./realTicker');
 const makeBacktestTicker = require('./backtestTicker');
 const makeTrader = require('./trader');
-const makePredictor = require('./strategies/frodo/predictor');
-const { handlePrediction } = require('./strategies/frodo/trader');
+const makePredictor = require('./strategies/mlpClosePrice/predictor');
+const { handlePrediction } = require('./strategies/mlpClosePrice/trader');
 
 const symbol = 'ETHBTC';
 const interval = '1m';
