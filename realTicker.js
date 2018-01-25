@@ -13,10 +13,10 @@ const start =
     getKlines({ symbol, interval, limit })
       .then((initKlines) => {
         let klines = initKlines;
-        emitter.emit('data', klines);
+        emitter.emit('data', { klines, final: true });
         onKline(symbol, interval, (data) => {
           klines = updateKlines(klines, data.kline);
-          emitter.emit('data', klines);
+          emitter.emit('data', { klines, final: data.kline.final });
         });
       })
       .catch((err, data) => {

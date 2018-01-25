@@ -38,7 +38,7 @@ const start =
     for (let line of lines) {
       klines = updateKlines(klines, lineToKline(line));
       if (klines.length >= limit) {
-        await onData(klines);
+        await onData({ klines, final: true });
       }
     }
   };

@@ -35,7 +35,6 @@ async function run() {
     ticker.start();
     ticker.on('data', trader.handleData);
   }
-
   console.log('Completed');
 };
 
