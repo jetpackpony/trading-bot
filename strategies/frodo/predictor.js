@@ -32,34 +32,19 @@ const initModel = () => {
     });
 };
 
-const makePredictor = async ({ intervalMs }) => {
-  const emitter = new EventEmitter();
-  let predicting = false;
+const makePredictor = async () => {
   const isGoingToGrow = await initModel();
 
-  emitter.predict = (data) => {
-    if (predicting) {
-      return;
+  return {
+    predict: async (klines) => {
+      const pred = await isGoingToGrow(R.pluck('close')(klines));
+      return {
+        trend: (pred) ? 'up' : 'down',
+        price: R.last(klines).close,
+        time: R.last(klines).endTime
+      };
     }
-    predicting = true;
-    isGoingToGrow(R.pluck('close')(data))
-      .then((pred) => {
-        predicting = false;
-        emitter.emit('prediction', {
-          trend: (pred) ? 'up' : 'down',
-          currentPrice: R.last(data).close,
-          time: R.last(data).endTime
-        });
-        emitter.emit('ready');
-      });
-    /*
-    Promise.resolve().then(() => {
-      emitter.emit('prediction', data);
-      emitter.emit('ready');
-    });
-    */
-  };
-  return emitter;
+  }
 };
 
 module.exports = makePredictor;
