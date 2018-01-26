@@ -15,7 +15,23 @@ const updateKlinesOrig = R.curry((limit, origKlines, line) => {
     : R.append(line, origKlines);
 });
 
+const transformations = {
+  startTime: parseInt,
+  open: parseFloat,
+  high: parseFloat,
+  low: parseFloat,
+  close: parseFloat,
+  volume: parseFloat,
+  endTime: parseInt,
+  quoteVolume: parseFloat,
+  trades: parseInt,
+  takerBaseAssetVolume: parseFloat,
+  takerQuoteAssetVolume: parseFloat,
+  ignored: parseInt
+};
+const transformValues = R.evolve(transformations);
 const lineToKline = R.compose(
+  transformValues,
   R.zipObj([
     "startTime", "open", "high", "low", "close", "volume",
     "endTime", "quoteVolume", "trades", "takerBaseAssetVolume",

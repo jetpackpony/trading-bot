@@ -8,14 +8,31 @@ const updateKlines = (origKlines, line) => {
     : R.append(line, R.slice(1, Infinity, origKlines));
 };
 
+const transformations = {
+  startTime: parseInt,
+  open: parseFloat,
+  high: parseFloat,
+  low: parseFloat,
+  close: parseFloat,
+  volume: parseFloat,
+  endTime: parseInt,
+  quoteVolume: parseFloat,
+  quoteAssetVolume: parseFloat,
+  trades: parseInt,
+  takerBaseAssetVolume: parseFloat,
+  takerQuoteAssetVolume: parseFloat,
+  ignored: parseInt
+};
+const transformValues = R.evolve(transformations);
+
 const start =
   ({ symbol, interval, limit, emitter }) => {
     getKlines({ symbol, interval, limit })
       .then((initKlines) => {
-        let klines = initKlines;
+        let klines = R.map(transformValues, initKlines);
         emitter.emit('data', { klines, final: true });
         onKline(symbol, interval, (data) => {
-          klines = updateKlines(klines, data.kline);
+          klines = updateKlines(klines, transformValues(data.kline));
           emitter.emit('data', { klines, final: data.kline.final });
         });
       })
