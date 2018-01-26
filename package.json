@@ -19,7 +19,8 @@
     "moment": "^2.20.1",
     "nconf": "^0.10.0",
     "ramda": "^0.25.0",
-    "sleep": "^5.1.1"
+    "sleep": "^5.1.1",
+    "talib": "^1.0.4"
   },
   "devDependencies": {},
   "scripts": {
