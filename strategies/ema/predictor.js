@@ -53,7 +53,7 @@ module.exports = makePredictor;
 if (require.main === module) {
   async function run() {
     let data = [1,3,4,5,6,7,8,9,10,11,12,13,14,15];
-    let res = await getEMA(data, 8);
+    let res = await getEMA(8, data);
     console.log(res);
   };
   run();
