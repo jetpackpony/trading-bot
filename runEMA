@@ -1,8 +1,8 @@
 #!/bin/bash
 #node --inspect-brk \
 node \
-  runner.js --symbol="ETHBTC" --interval="1m" --limit="10"  \
+  runner.js --symbol="ETHBTC" --interval="1m" --limit="20"  \
               --tickerType="backtest" --logId="test" \
-              --strategy="ema" --short_period="5" --long_period="10" \
+              --strategy="ema" --short_period="5" --long_period="20" \
               --fileName="analyser/rawData/2018-01-18_ETHBTC_1m_0.12_mon_.csv"
               #--fileName="analyser/rawData/2018-01-15_ETHBTC_1m_6_mon_slice_last_50k.csv"
