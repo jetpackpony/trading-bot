@@ -48,7 +48,7 @@ async function run() {
 run();
 
 const getStats = ({ closed, open }) => {
-  const deals = R.append(open, closed);
+  const deals = R.reject(R.isNil, R.append(open, closed));
   return {
     numDeals: deals.length,
     totalProfit: R.sum(R.pluck('profit', deals)),
