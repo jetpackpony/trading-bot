@@ -48,7 +48,7 @@ const start =
   async ({ symbol, interval, limit, emitter, fileName }, onData) => {
     const updateKlines = updateKlinesOrig(limit);
     const lines = prepareLines(fs.readFileSync(fileName, 'utf-8'));
-    console.log(`Read ${lines.length} examples from file`);
+    //console.log(`Read ${lines.length} examples from file`);
 
     let klines = [];
     for (let line of lines) {
