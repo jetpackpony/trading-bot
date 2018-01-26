@@ -8,11 +8,13 @@ const handlePrediction =
       let profit = price / open.buyPrice - 1;
       open = updateDeal(comission, open, price, profit, time);
       if (trend === 'down') {
-        console.log(`Got down trend prediction, selling: ${price} (${profit})`);
-        closed.push(open);
-        open = null;
+        if (Math.abs(open.profitWithComission) >= 0.01) {
+          console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
+          closed.push(open);
+          open = null;
+        }
       } else {
-        console.log(`Trend is going up, standing by: ${price} (${profit})`);
+        console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
         open.checkTime = time;
       }
     } else {
