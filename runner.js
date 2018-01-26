@@ -12,7 +12,8 @@ const args = R.merge(
     symbol: null,
     interval: '1m',
     limit: null,
-    comission: 0.0005
+    comission: 0.0005,
+    logId: moment().valueOf()
   },
   argv
 );
@@ -23,12 +24,11 @@ if (R.any(R.isNil, args)) {
 
 const makePredictor = require(`./strategies/${args.strategy}/predictor`);
 const makeHandler = require(`./strategies/${args.strategy}/predictionHandler`);
-const logId = moment().valueOf();
 
 async function run() {
   const predictor = await makePredictor(args);
   const trader = await makeTrader({
-    logId,
+    logId: args.logId,
     predictor,
     handlePrediction: makeHandler(args)
   });
