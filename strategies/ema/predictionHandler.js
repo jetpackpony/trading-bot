@@ -1,9 +1,10 @@
 const R = require('ramda');
 
 const handlePrediction =
-  R.curry(async (comission, prediction, deals) => {
+  R.curry(async (comission, prediction, deals, actions) => {
     let { price, trend, time } = prediction;
     let { closed, open } = deals;
+    let action = R.merge(prediction, { action: 'none' });
     if (open) {
       let profit = price / open.buyPrice - 1;
       open = updateDeal(comission, open, price, profit, time);
@@ -12,6 +13,7 @@ const handlePrediction =
           console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
           closed.push(open);
           open = null;
+          action.action = 'sell';
         }
       } else {
         console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
@@ -28,11 +30,15 @@ const handlePrediction =
           sellPrice: null,
           profit: null
         };
+        action.action = 'buy';
       } else {
         console.log(`Standing by at price: ${price}`);
       }
     }
-    return { closed, open };
+    return {
+      deals: { closed, open },
+      actions: R.append(action, actions)
+    };
   });
 
 const updateDeal = (comission, deal, price, profit, time) => {

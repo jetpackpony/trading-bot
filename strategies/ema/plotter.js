@@ -8,10 +8,10 @@ const {
   getSellIndices,
 } = require('../../charts/chartUtils');
 
-const plot = R.curry((fileName, dirName, predictions) => {
-  const prices = R.pluck('price', predictions);
-  const indices = R.times(R.identity, predictions.length);
-  const commands = R.zip(indices, getCommands(predictions));
+const plot = R.curry((fileName, dirName, actions) => {
+  const prices = R.pluck('price', actions);
+  const indices = R.times(R.identity, actions.length);
+  const commands = R.zip(indices, R.pluck('action', actions));
   const buyIndices = getBuyIndices(commands);
   const sellIndices = getSellIndices(commands);
 
@@ -26,7 +26,7 @@ const plot = R.curry((fileName, dirName, predictions) => {
   };
   const emaShort = {
     x: indices,
-    y: R.map(R.path(['stratData', 'shortEMA']), predictions),
+    y: R.map(R.path(['stratData', 'shortEMA']), actions),
     mode: 'lines',
     name: 'EMA short',
     line: {
@@ -35,7 +35,7 @@ const plot = R.curry((fileName, dirName, predictions) => {
   };
   const emaLong = {
     x: indices,
-    y: R.map(R.path(['stratData', 'longEMA']), predictions),
+    y: R.map(R.path(['stratData', 'longEMA']), actions),
     mode: 'lines',
     name: 'EMA long',
     line: {
