@@ -44,11 +44,12 @@ const runStrategy = async (arguments) => {
   const makePlotter = require(`./strategies/${args.strategy}/plotter`);
   const predictor = await makePredictor(args);
   const plotter = await makePlotter(args);
+  const handler = await makeHandler(args);
   const trader = await makeTrader({
     plotInterval: args.plotInterval,
     logId: args.logId,
     predictor,
-    handlePrediction: makeHandler(args),
+    handler,
     plotter
   });
 

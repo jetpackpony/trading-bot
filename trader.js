@@ -5,7 +5,7 @@ const makeTrader = async ({
   plotInterval,
   logId,
   predictor,
-  handlePrediction,
+  handler,
   plotter
 }) => {
 
@@ -16,7 +16,7 @@ const makeTrader = async ({
     handleData: async ({ klines, final }) => {
       if (final) {
         const pred = await predictor.predict(klines);
-        ({ deals, actions } = await handlePrediction(pred, deals, actions));
+        ({ deals, actions } = await handler.handlePrediction(pred, deals, actions));
         fs.writeFileSync(logFileName, JSON.stringify(deals, null, 2));
         if (actions.length % plotInterval === 0) {
           console.log('Plotted to: ', plotter.plot(actions));

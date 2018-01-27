@@ -50,12 +50,17 @@ const updateDeal = (comission, deal, price, profit, time) => {
   return deal;
 };
 
-module.exports = ({ comission }) => {
+const makeHandler = async ({ comission }) => {
   if (R.any(R.isNil, [comission])) {
     throw new Error(`Not all args are setup`);
   }
-  return handlePrediction(comission);
+  return {
+    handlePrediction: handlePrediction(comission)
+  };
 };
+
+module.exports = makeHandler;
+
 
 if (require.main === module) {
   async function run() {

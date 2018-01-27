@@ -52,12 +52,15 @@ const updateDeal = (comission, deal, price, profit, time) => {
   return deal;
 };
 
-module.exports = ({ postWindowSize, comission }) => {
+const makeHandler = async ({ postWindowSize, comission }) => {
   if (R.any(R.isNil, [postWindowSize, comission])) {
     throw new Error(`Not all args are setup`);
   }
-  return handlePrediction(postWindowSize * 60 * 1000, comission)
+  return {
+    handlePrediction: handlePrediction(postWindowSize * 60 * 1000, comission)
+  };
 };
+module.exports = makeHandler;
 
 if (require.main === module) {
   async function run() {
