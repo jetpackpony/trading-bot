@@ -30,13 +30,17 @@ const makePredictor = async ({ short_period, long_period }) => {
   return {
     predict: async (klines) => {
       const prices = R.pluck('close')(klines);
+      const short = await getShort(prices);
+      const long = await getLong(prices);
       let res = {
         trend: 'none',
         price: R.last(prices),
-        time: R.last(klines).endTime
+        time: R.last(klines).endTime,
+        stratData: {
+          shortEMA: R.last(short),
+          longEMA: R.last(long)
+        }
       };
-      const short = await getShort(prices);
-      const long = await getLong(prices);
       if (R.last(short) > R.last(long)) {
         res.trend = 'up';
       }
