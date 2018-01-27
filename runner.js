@@ -30,7 +30,8 @@ const defaultArgs = {
   limit: null,
   comission: 0.0005,
   cutoff: 0.01,               // price fluctuation after which we can sell, %
-  logId: moment().valueOf()
+  logId: moment().valueOf(),
+  plotInterval: 0
 };
 
 const runStrategy = async (arguments) => {
@@ -40,16 +41,21 @@ const runStrategy = async (arguments) => {
   }
   const makePredictor = require(`./strategies/${args.strategy}/predictor`);
   const makeHandler = require(`./strategies/${args.strategy}/predictionHandler`);
+  const makePlotter = require(`./strategies/${args.strategy}/plotter`);
   const predictor = await makePredictor(args);
+  const plotter = await makePlotter(args);
   const trader = await makeTrader({
+    plotInterval: args.plotInterval,
     logId: args.logId,
     predictor,
-    handlePrediction: makeHandler(args)
+    handlePrediction: makeHandler(args),
+    plotter
   });
 
   if (args.tickerType === 'backtest') {
     const ticker = await makeBacktestTicker(args);
     await ticker.start(trader.handleData);
+    trader.plotAll();
     return getStats(trader.getDeals());
   } else {
     const ticker = await makeRealTicker(args);

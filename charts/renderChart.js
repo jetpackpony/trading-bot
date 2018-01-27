@@ -10,7 +10,11 @@ const render = (chartData, chartLayout, name, dir = '') => {
     chartData: JSON.stringify(chartData),
     chartLayout: JSON.stringify(chartLayout),
   });
-  const file = path.join(__dirname, dir, name + '.html');
+  const dirName = path.join(__dirname, dir);
+  if (!fs.existsSync(dirName)){
+    fs.mkdirSync(dirName);
+  }
+  const file = path.join(dirName, name + '.html');
   fs.writeFileSync(file, output);
   return path.join('file://', file);
 };
