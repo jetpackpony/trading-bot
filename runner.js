@@ -55,7 +55,7 @@ const runStrategy = async (arguments) => {
   if (args.tickerType === 'backtest') {
     const ticker = await makeBacktestTicker(args);
     await ticker.start(trader.handleData);
-    trader.plotAll();
+    console.log('Plotted at: ', trader.plotAll());
     return getStats(trader.getDeals());
   } else {
     const ticker = await makeRealTicker(args);
