@@ -1,7 +1,7 @@
 const R = require('ramda');
 
 const handlePrediction =
-  R.curry(async (comission, prediction, deals, actions) => {
+  R.curry(async (comission, cutoff, prediction, deals, actions) => {
     let { price, trend, time } = prediction;
     let { closed, open } = deals;
     let action = R.merge(prediction, { action: 'none' });
@@ -9,7 +9,7 @@ const handlePrediction =
       let profit = price / open.buyPrice - 1;
       open = updateDeal(comission, open, price, profit, time);
       if (trend === 'down') {
-        if (Math.abs(open.profitWithComission) >= 0.01) {
+        if (Math.abs(open.profitWithComission) > cutoff) {
           console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
           closed.push(open);
           open = null;
@@ -50,12 +50,12 @@ const updateDeal = (comission, deal, price, profit, time) => {
   return deal;
 };
 
-const makeHandler = async ({ comission }) => {
-  if (R.any(R.isNil, [comission])) {
+const makeHandler = async ({ comission, cutoff }) => {
+  if (R.any(R.isNil, [comission, cutoff])) {
     throw new Error(`Not all args are setup`);
   }
   return {
-    handlePrediction: handlePrediction(comission)
+    handlePrediction: handlePrediction(comission, cutoff )
   };
 };
 
