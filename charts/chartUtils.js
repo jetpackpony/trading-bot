@@ -1,18 +1,5 @@
 const R = require('ramda');
 
-const lastCommand = R.compose(
-  R.last,
-  R.reject(R.equals('none'))
-);
-const getCommands = R.reduce((acc, p) => {
-  if (p.trend === 'up' && lastCommand(acc) !== 'buy') {
-    return R.append('buy', acc);
-  }
-  if (p.trend === 'down' && lastCommand(acc) !== 'sell') {
-    return R.append('sell', acc);
-  }
-  return R.append('none', acc);
-}, []);
 const getValuesForIndices = R.useWith(R.ap, [R.map(R.nth), R.of]);
 const isBuyCommand = R.compose(R.equals('buy'), R.prop(1));
 const getBuyIndices = R.compose(
@@ -26,8 +13,6 @@ const getSellIndices = R.compose(
 );
 
 module.exports = {
-  lastCommand,
-  getCommands,
   getValuesForIndices,
   isBuyCommand,
   getBuyIndices,

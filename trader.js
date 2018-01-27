@@ -11,21 +11,20 @@ const makeTrader = async ({
 
   let logFileName = `logs/dealsLog-${logId}.log`;
   let deals = { closed: [], open: null };
-  let predictions = [];
+  let actions = [];
   return {
     handleData: async ({ klines, final }) => {
       if (final) {
         const pred = await predictor.predict(klines);
-        deals = await handlePrediction(pred, deals);
+        ({ deals, actions } = await handlePrediction(pred, deals, actions));
         fs.writeFileSync(logFileName, JSON.stringify(deals, null, 2));
-        predictions.push(pred);
-        if (predictions.length % plotInterval === 0) {
-          console.log('Plotted to: ', plotter.plot(predictions));
+        if (actions.length % plotInterval === 0) {
+          console.log('Plotted to: ', plotter.plot(actions));
         }
       }
     },
     getDeals: () => deals,
-    plotAll: () => plotter.plot(predictions)
+    plotAll: () => plotter.plot(actions)
   };
 };
 
