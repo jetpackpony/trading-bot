@@ -12,7 +12,8 @@ const params = {
   logId: '',
   short_period: 3,
   long_period: 30,
-  cutoff: 0.01
+  cutoff: 0.01,
+  plotInterval: 1
 };
 const run = async () => {
   let res = await runStrategy(R.merge(
