@@ -1,16 +1,30 @@
-import keras
 import pdb
 import numpy as np
+from sklearn.metrics import r2_score
 
-class Metrics(keras.callbacks.Callback):
-    def on_epoch_end(self, batch, logs={}):
-        predict = np.asarray(self.model.predict(self.validation_data[0]))
-        targ = self.validation_data[1]
-        targ_pos_ids = np.argwhere(targ.flatten()).flatten()
-        pred_pos_ids = np.argwhere(predict.flatten() >= 0.5).flatten()
-        true_pos = predict[targ_pos_ids].flatten() >= 0.5
+def correctSignPercent(pred, y):
+    correctNum = np.where(np.sign(y) == np.sign(pred))[0].shape[0]
+    res = correctNum / pred.shape[0]
+    return res
 
-        self.precision = np.count_nonzero(true_pos) / len(pred_pos_ids)
-        self.recall = np.count_nonzero(true_pos) / len(targ_pos_ids)
+def correctSignPercentRoll(pred, y):
+    prev_y = np.roll(y, 1)
+    actualSign = (y > prev_y).astype(int)[1:]
+    predSign = (pred > prev_y).astype(int)[1:]
+    res = np.where(actualSign == predSign)[0].shape[0] / actualSign.shape[0]
+    return res
 
-        return
+def percentWithin(pred, y, border=0.05):
+    withinBorderNum = np.where(np.absolute(pred / y - 1) < border)[0].shape[0]
+    res = withinBorderNum / pred.shape[0]
+    return res
+
+def RSquared(pred, y):
+    res = r2_score(y.flatten(), pred.flatten())
+    return res
+
+"""
+def signPrecision
+
+def signRecall
+"""

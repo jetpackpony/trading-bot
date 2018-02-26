@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Line Chart</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+      canvas{
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div id="tester" style="top:1rem;bottom:1rem;left:1rem;right:1rem;position:absolute;"></div>
+    <script>
+      const data = {{&chartData}}
+      const layout = {{&chartLayout}}
+      Plotly.plot(document.getElementById('tester'), data, layout, {
+        scrollZoom: true
+      });
+    </script>
+  </body>
+</html>
