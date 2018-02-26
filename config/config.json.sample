@@ -1,4 +1,5 @@
 {
-  "apiKey": "from account on binance.com",
-  "apiSecret": "from account on binance.com"
+  "API_KEY": "from account on binance.com",
+  "API_SECRET": "from account on binance.com",
+  "MONGO_URL": "mongodb connection url (mlabs probably)",
 }

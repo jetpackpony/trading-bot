@@ -5,7 +5,8 @@ nconf
   .argv()
   .env([
     'API_KEY',
-    'API_SECRET'
+    'API_SECRET',
+    'MONGO_URL',
   ])
   .file({
     file: path.join(

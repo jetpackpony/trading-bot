@@ -17,6 +17,7 @@
     "minimist": "^1.2.0",
     "mocha": "^4.1.0",
     "moment": "^2.20.1",
+    "mongoose": "^5.0.7",
     "mustache": "^2.3.0",
     "nconf": "^0.10.0",
     "ramda": "^0.25.0",
