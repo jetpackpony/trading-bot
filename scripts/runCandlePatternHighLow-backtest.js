@@ -2,11 +2,17 @@ const R = require('ramda');
 const runStrategy = require('../runner');
 
 const params = {
-  strategy: 'ema',
+  strategy: 'candlePatternHighLow',
   tickerType: 'backtest',
-  //fileName: "analyser/rawData/2018-01-15_ETHBTC_1m_6_mon_slice_last_50k.csv",
-  //fileName: "analyser/rawData/2018-01-18_ETHBTC_1m_0.12_mon_.csv",
-
+  /*
+  const divMean = -4.4741849547267676e-10;
+  const divStd = 0.0000010083310600294418;
+  fileName: "analyser/rawData/2018-01-15_ETHBTC_1m_6_mon_slice_last_50k.csv",
+  fileName: "analyser/rawData/2018-01-18_ETHBTC_1m_0.12_mon_.csv",
+  fileName: "analyser/rawData/2018-01-15_ETHBTC_1h_4_mon_.csv",
+  fileName: "analyser/rawData/2018-01-31_ETHBTC_1m_0.5_mon_.csv",
+  */
+  //fileName: "analyser/rawData/2018-01-31_ETHBTC_1m_0.5_mon_.csv",
   fileName: "analyser/rawData/test-sample-falling.csv",
   //fileName: "analyser/rawData/test-sample-flat.csv",
   //fileName: "analyser/rawData/test-sample-mixed.csv",
@@ -15,18 +21,18 @@ const params = {
   interval: '1m',
   comission: 0.0005,
   logId: 'test',
-  short_period: 15,
-  long_period: 10,
+  short_period: 20,
+  middle_period: 70,
+  long_period: 500,
   cutoff: 0.01,
-  filter_power: 0.8,
-  //plotInterval: 500
+  //plotInterval: 1,
 };
 const run = async () => {
   let res = await runStrategy(R.merge(
     params,
     {
       //limit: R.max(params.short_period, params.long_period)
-      limit: 100
+      limit: 200
     }
   ));
   console.log('Results: ', res);

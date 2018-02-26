@@ -21,6 +21,7 @@
     "nconf": "^0.10.0",
     "ramda": "^0.25.0",
     "sleep": "^5.1.1",
+    "sleep-promise": "^2.0.0",
     "talib": "^1.0.4"
   },
   "devDependencies": {},

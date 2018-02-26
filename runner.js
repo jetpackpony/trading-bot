@@ -1,26 +1,9 @@
 const R = require('ramda');
+const math = require('mathjs');
 const moment = require('moment');
 const makeRealTicker = require('./realTicker');
 const makeBacktestTicker = require('./backtestTicker');
 const makeTrader = require('./trader');
-
-const isProfitEmpty = R.compose(
-  R.not,
-  R.propOr(false, 'profitWithComission')
-);
-const filterDeals = R.compose(
-  R.reject(isProfitEmpty),
-  R.reject(R.isNil),
-  R.append
-);
-const getStats = ({ closed, open }) => {
-  const deals = filterDeals(open, closed);
-  return {
-    numDeals: deals.length,
-    totalProfit: R.sum(R.pluck('profit', deals)),
-    totalProfitWithComission: R.sum(R.pluck('profitWithComission', deals))
-  };
-};
 
 const defaultArgs = {
   strategy: null,
@@ -56,8 +39,9 @@ const runStrategy = async (arguments) => {
   if (args.tickerType === 'backtest') {
     const ticker = await makeBacktestTicker(args);
     await ticker.start(trader.handleData);
+    trader.finish();
     console.log('Plotted at: ', trader.plotAll());
-    return getStats(trader.getDeals());
+    return trader.getStats();
   } else {
     const ticker = await makeRealTicker(args);
     ticker.start();

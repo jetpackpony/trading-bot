@@ -6,7 +6,10 @@ const {
   getValuesForIndices,
   getBuyIndices,
   getSellIndices,
+  getDownIndices,
 } = require('../../charts/chartUtils');
+
+const getStratData = (prop) => R.map(R.path(['stratData', prop]));
 
 const plot = R.curry((fileName, dirName, actions) => {
   const prices = R.pluck('price', actions);
@@ -14,12 +17,17 @@ const plot = R.curry((fileName, dirName, actions) => {
   const commands = R.zip(indices, R.pluck('action', actions));
   const buyIndices = getBuyIndices(commands);
   const sellIndices = getSellIndices(commands);
+  const trends = R.zip(indices, R.pluck('trend', actions));
+  const downIndices = getDownIndices(trends);
 
-  const rsi = {
+  const adxs = R.map(R.path(['stratData', 'adx']), actions);
+  const maxAdx = Math.max(...R.map(Math.abs, adxs)) * 1.2;
+  const range = [0, maxAdx];
+  const adx = {
     x: indices,
-    y: R.map(R.path(['stratData', 'rsi']), actions),
+    y: R.map(R.path(['stratData', 'adx']), actions),
     mode: 'lines',
-    name: 'RSI',
+    name: 'ADX',
     line: {
       color: '#5353DD',
     },
@@ -34,23 +42,15 @@ const plot = R.curry((fileName, dirName, actions) => {
     },
     yaxis: 'y2',
   };
-  const emaShort = {
+  const sar = {
     x: indices,
-    y: R.map(R.path(['stratData', 'shortEMA']), actions),
-    mode: 'lines',
-    name: 'EMA short',
-    line: {
+    y: getStratData('sar')(actions),
+    mode: 'markers',
+    name: 'SAR',
+    marker: {
+      symbol: 'circle-dot',
       color: '#FF3F33',
-    },
-    yaxis: 'y2',
-  };
-  const emaLong = {
-    x: indices,
-    y: R.map(R.path(['stratData', 'longEMA']), actions),
-    mode: 'lines',
-    name: 'EMA long',
-    line: {
-      color: '#3390FF',
+      size: 8
     },
     yaxis: 'y2',
   };
@@ -60,7 +60,7 @@ const plot = R.curry((fileName, dirName, actions) => {
     mode: 'markers',
     name: 'Buy points',
     marker: {
-      color: '#44fc65',
+      color: '#2bc62b',
       size: 14
     },
     yaxis: 'y2',
@@ -71,20 +71,31 @@ const plot = R.curry((fileName, dirName, actions) => {
     mode: 'markers',
     name: 'Sell points',
     marker: {
-      color: '#f22e7c',
+      color: '#ed3841',
       size: 14
+    },
+    yaxis: 'y2',
+  };
+  const downPoints = {
+    x: downIndices,
+    y: getValuesForIndices(downIndices, prices),
+    mode: 'markers',
+    name: 'Down points',
+    marker: {
+      symbol: 'triangle-down',
+      color: '#2f7df9',
+      size: 8
     },
     yaxis: 'y2',
   };
 
   const chartData = [
-    rsi,
-    closePrices, emaShort, emaLong,
-    buyPoints, sellPoints
+    adx,
+    closePrices, sar,
+    buyPoints, sellPoints, //downPoints
   ];
-
   const layout = {
-    yaxis: {domain: [0, 0.19], fixedrange: true, range: [0, 100]},
+    yaxis: {domain: [0, 0.19], fixedrange: true, range},
     yaxis2: {domain: [0.21, 1]},
     shapes: [{
       type: 'rect',
@@ -92,8 +103,8 @@ const plot = R.curry((fileName, dirName, actions) => {
       yref: 'y',
       x0: 0,
       x1: 1,
-      y0: 20,
-      y1: 80,
+      y0: 0,
+      y1: 50,
       fillcolor: '#d3d3d3',
       opacity: 0.2,
       layer: 'below',
@@ -108,19 +119,15 @@ const plot = R.curry((fileName, dirName, actions) => {
 
 const makePlotter = async ({
   strategy,
-  short_period,
-  long_period
 }) => {
   if (R.any(R.isNil, [
     strategy,
-    short_period,
-    long_period
   ])) {
     throw new Error(`Not all args are setup`);
   }
 
   const dirName = strategy;
-  const fileName = `short=${short_period},long=${long_period}`;
+  const fileName = `testme`;
   return {
     plot: plot(fileName, dirName)
   };
@@ -133,46 +140,51 @@ if (require.main === module) {
     const plotter = await makePlotter({
       strategy: 'test',
       short_period: 5,
+      middle_period: 20,
       long_period: 30
     });
-    plotter.plot([
+    console.log(plotter.plot([
       {
         trend: 'up',
+        action: 'buy',
         price: 1,
         time: 1,
         stratData: {
-          shortEMA: 0.5,
-          longEMA: 0.3
+          sar: 0.8,
+          adx: 0,
         }
       },
       {
         trend: 'up',
+        action: 'none',
         price: 2,
         time: 2,
         stratData: {
-          shortEMA: 1.3,
-          longEMA: 0.9
+          sar: 1.8,
+          adx: 23,
         }
       },
       {
         trend: 'down',
+        action: 'sell',
         price: 3,
         time: 3,
         stratData: {
-          shortEMA: 2.6,
-          longEMA: 1.3
+          sar: 2.8,
+          adx: 60,
         }
       },
       {
         trend: 'down',
+        action: 'none',
         price: 3,
         time: 4,
         stratData: {
-          shortEMA: 2.3,
-          longEMA: 1.2
+          sar: 2.8,
+          adx: 50,
         }
       },
-    ])
+    ]));
   };
   run();
 }

@@ -11,6 +11,11 @@ const getSellIndices = R.compose(
   R.map(R.nth(0)),
   R.filter(isSellCommand),
 );
+const isDownTrend = R.compose(R.equals('down'), R.prop(1));
+const getDownIndices = R.compose(
+  R.map(R.nth(0)),
+  R.filter(isDownTrend),
+);
 
 module.exports = {
   getValuesForIndices,
@@ -18,4 +23,5 @@ module.exports = {
   getBuyIndices,
   isSellCommand,
   getSellIndices,
+  getDownIndices,
 };

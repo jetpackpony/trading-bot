@@ -15,13 +15,22 @@ const plot = R.curry((fileName, dirName, actions) => {
   const buyIndices = getBuyIndices(commands);
   const sellIndices = getSellIndices(commands);
 
-  const rsi = {
+  const stochRSIK = {
     x: indices,
-    y: R.map(R.path(['stratData', 'rsi']), actions),
+    y: R.map(R.path(['stratData', 'slowK']), actions),
     mode: 'lines',
-    name: 'RSI',
+    name: 'StochRSI-K',
     line: {
       color: '#5353DD',
+    },
+  };
+  const stochRSID = {
+    x: indices,
+    y: R.map(R.path(['stratData', 'slowD']), actions),
+    mode: 'lines',
+    name: 'StochRSI-D',
+    line: {
+      color: '#DD5353',
     },
   };
   const closePrices = {
@@ -31,26 +40,6 @@ const plot = R.curry((fileName, dirName, actions) => {
     name: 'Close Prices',
     line: {
       color: '#7E7E7E',
-    },
-    yaxis: 'y2',
-  };
-  const emaShort = {
-    x: indices,
-    y: R.map(R.path(['stratData', 'shortEMA']), actions),
-    mode: 'lines',
-    name: 'EMA short',
-    line: {
-      color: '#FF3F33',
-    },
-    yaxis: 'y2',
-  };
-  const emaLong = {
-    x: indices,
-    y: R.map(R.path(['stratData', 'longEMA']), actions),
-    mode: 'lines',
-    name: 'EMA long',
-    line: {
-      color: '#3390FF',
     },
     yaxis: 'y2',
   };
@@ -77,12 +66,7 @@ const plot = R.curry((fileName, dirName, actions) => {
     yaxis: 'y2',
   };
 
-  const chartData = [
-    rsi,
-    closePrices, emaShort, emaLong,
-    buyPoints, sellPoints
-  ];
-
+  const chartData = [ stochRSIK, stochRSID, closePrices, buyPoints, sellPoints ];
   const layout = {
     yaxis: {domain: [0, 0.19], fixedrange: true, range: [0, 100]},
     yaxis2: {domain: [0.21, 1]},
@@ -108,19 +92,15 @@ const plot = R.curry((fileName, dirName, actions) => {
 
 const makePlotter = async ({
   strategy,
-  short_period,
-  long_period
 }) => {
   if (R.any(R.isNil, [
     strategy,
-    short_period,
-    long_period
   ])) {
     throw new Error(`Not all args are setup`);
   }
 
   const dirName = strategy;
-  const fileName = `short=${short_period},long=${long_period}`;
+  const fileName = `test`;
   return {
     plot: plot(fileName, dirName)
   };
@@ -132,47 +112,49 @@ if (require.main === module) {
   async function run() {
     const plotter = await makePlotter({
       strategy: 'test',
-      short_period: 5,
-      long_period: 30
     });
-    plotter.plot([
+    console.log(plotter.plot([
       {
         trend: 'up',
+        action: 'buy',
         price: 1,
         time: 1,
         stratData: {
-          shortEMA: 0.5,
-          longEMA: 0.3
+          slowK: 10,
+          slowD: 8,
         }
       },
       {
         trend: 'up',
+        action: 'none',
         price: 2,
         time: 2,
         stratData: {
-          shortEMA: 1.3,
-          longEMA: 0.9
+          slowK: 20,
+          slowD: 23,
         }
       },
       {
         trend: 'down',
+        action: 'sell',
         price: 3,
         time: 3,
         stratData: {
-          shortEMA: 2.6,
-          longEMA: 1.3
+          slowK: 80,
+          slowD: 73,
         }
       },
       {
         trend: 'down',
+        action: 'none',
         price: 3,
         time: 4,
         stratData: {
-          shortEMA: 2.3,
-          longEMA: 1.2
+          slowK: 60,
+          slowD: 77,
         }
       },
-    ])
+    ]));
   };
   run();
 }

@@ -15,11 +15,14 @@ const plot = R.curry((fileName, dirName, actions) => {
   const buyIndices = getBuyIndices(commands);
   const sellIndices = getSellIndices(commands);
 
-  const rsi = {
+  const macds = R.map(R.path(['stratData', 'macdHist']), actions);
+  const maxMacds = Math.max(...R.map(Math.abs, macds)) * 1.2;
+  const range = [-maxMacds, maxMacds];
+  const macd = {
     x: indices,
-    y: R.map(R.path(['stratData', 'rsi']), actions),
+    y: macds,
     mode: 'lines',
-    name: 'RSI',
+    name: 'MACD Hist',
     line: {
       color: '#5353DD',
     },
@@ -31,26 +34,6 @@ const plot = R.curry((fileName, dirName, actions) => {
     name: 'Close Prices',
     line: {
       color: '#7E7E7E',
-    },
-    yaxis: 'y2',
-  };
-  const emaShort = {
-    x: indices,
-    y: R.map(R.path(['stratData', 'shortEMA']), actions),
-    mode: 'lines',
-    name: 'EMA short',
-    line: {
-      color: '#FF3F33',
-    },
-    yaxis: 'y2',
-  };
-  const emaLong = {
-    x: indices,
-    y: R.map(R.path(['stratData', 'longEMA']), actions),
-    mode: 'lines',
-    name: 'EMA long',
-    line: {
-      color: '#3390FF',
     },
     yaxis: 'y2',
   };
@@ -78,25 +61,25 @@ const plot = R.curry((fileName, dirName, actions) => {
   };
 
   const chartData = [
-    rsi,
-    closePrices, emaShort, emaLong,
+    macd,
+    closePrices,
     buyPoints, sellPoints
   ];
 
   const layout = {
-    yaxis: {domain: [0, 0.19], fixedrange: true, range: [0, 100]},
+    yaxis: {domain: [0, 0.19], fixedrange: true, range },
     yaxis2: {domain: [0.21, 1]},
     shapes: [{
-      type: 'rect',
+      type: 'line',
       xref: 'paper',
       yref: 'y',
       x0: 0,
       x1: 1,
-      y0: 20,
-      y1: 80,
+      y0: 0,
+      y1: 0,
       fillcolor: '#d3d3d3',
-      opacity: 0.2,
       layer: 'below',
+      opacity: 0.2,
       line: {
         width: 1
       }
@@ -108,19 +91,21 @@ const plot = R.curry((fileName, dirName, actions) => {
 
 const makePlotter = async ({
   strategy,
-  short_period,
-  long_period
+  fast_period,
+  slow_period,
+  signal_period
 }) => {
   if (R.any(R.isNil, [
     strategy,
-    short_period,
-    long_period
+    fast_period,
+    slow_period,
+    signal_period
   ])) {
     throw new Error(`Not all args are setup`);
   }
 
   const dirName = strategy;
-  const fileName = `short=${short_period},long=${long_period}`;
+  const fileName = `fast=${fast_period},slow=${slow_period},signal=${signal_period}`;
   return {
     plot: plot(fileName, dirName)
   };
@@ -135,44 +120,44 @@ if (require.main === module) {
       short_period: 5,
       long_period: 30
     });
-    plotter.plot([
+    console.log(plotter.plot([
       {
         trend: 'up',
+        action: 'buy',
         price: 1,
         time: 1,
         stratData: {
-          shortEMA: 0.5,
-          longEMA: 0.3
+          macdHist: 0.023,
         }
       },
       {
         trend: 'up',
+        action: 'none',
         price: 2,
         time: 2,
         stratData: {
-          shortEMA: 1.3,
-          longEMA: 0.9
+          macdHist: -0.049,
         }
       },
       {
         trend: 'down',
+        action: 'sell',
         price: 3,
         time: 3,
         stratData: {
-          shortEMA: 2.6,
-          longEMA: 1.3
+          macdHist: 0.003,
         }
       },
       {
         trend: 'down',
+        action: 'none',
         price: 3,
         time: 4,
         stratData: {
-          shortEMA: 2.3,
-          longEMA: 1.2
+          macdHist: -0.5,
         }
       },
-    ])
+    ]))
   };
   run();
 }

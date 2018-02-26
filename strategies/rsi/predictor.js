@@ -1,33 +1,32 @@
 const R = require('ramda');
 const math = require('mathjs');
 const talib = require('talib');
-const { SMA } = require('../../ta-promise');
+const { EMA, RSI, StochRSI } = require('../../ta-promise');
 
-const makePredictor = async ({ short_period, long_period }) => {
+const makePredictor = async () => {
+  /*
   if (R.any(R.isNil, [short_period, long_period])) {
     throw new Error(`Not all args are setup`);
-  }
-  const getShort = SMA(short_period);
-  const getLong = SMA(long_period);
+  } */
 
   return {
     predict: async (klines) => {
       const prices = R.pluck('close')(klines);
-      const short = await getShort(prices);
-      const long = await getLong(prices);
+      const rsi = await RSI(14, prices);
+      const r = R.last(rsi);
+
       let res = {
         trend: 'none',
         price: R.last(prices),
         time: R.last(klines).endTime,
         stratData: {
-          shortSMA: R.last(short),
-          longSMA: R.last(long)
+          rsi: r
         }
       };
-      if (R.last(short) > R.last(long)) {
+      if (r <= 20) {
         res.trend = 'up';
       }
-      if (R.last(short) < R.last(long)) {
+      if (r >= 80) {
         res.trend = 'down';
       }
       return res;
@@ -37,11 +36,18 @@ const makePredictor = async ({ short_period, long_period }) => {
 
 module.exports = makePredictor;
 
+const getRandomArray = (num, min = -10, max = 10) => {
+  return R.times(R.partial(getRandomNumber, [min, max]), num);
+};
+const getRandomNumber = (min, max) => {
+  return Math.random() * (max - min) + min;
+};
 if (require.main === module) {
   async function run() {
-    let data = [1,2,3,4,5,6,7,8,9,10,11,12,13];
-    let res = await SMA(8, data);
+    let data = getRandomArray(22);
+    let res = await RSI(14, data);
     console.log(res);
   };
   run();
 }
+

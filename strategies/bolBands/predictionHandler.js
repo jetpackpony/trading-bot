@@ -1,5 +1,9 @@
 const R = require('ramda');
 
+const shouldWeSell = (deal) => {
+
+  return (profit <= -cutoff || profit >= (cutoff * 2));
+};
 const handlePrediction =
   R.curry(async (comission, cutoff, prediction, deals, actions) => {
     let { price, trend, time } = prediction;
@@ -8,39 +12,43 @@ const handlePrediction =
     if (open) {
       let profit = price / open.buyPrice - 1;
       open = updateDeal(comission, cutoff, open, price, profit, time);
-      if (open.sellPriceWithComission < open.stopLoss) {
-        closed.push(open);
-        open = null;
-        action.action = 'sell';
+      if (trend === 'down') {
+        //if (open.profitWithComission <= open.stopLoss) {
+        //console.log(`Price went up/down, selling: ${price} (${open.profitWithComission})`);
+          closed.push(open);
+          open = null;
+          action.action = 'sell';
+        //}
+      } else {
+        //console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
+        open.checkTime = time;
       }
       /*
       if (trend === 'down') {
         //if (Math.abs(open.profitWithComission) > cutoff) {
-        //console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
+          console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
           closed.push(open);
           open = null;
           action.action = 'sell';
-          //}
+        //}
       } else {
-        //console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
+        console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
         open.checkTime = time;
       }
       */
     } else {
       if (trend === 'up') {
         //console.log(`Buying for ${price}`);
-        const buyPriceWithComission = price * (1 + comission);
         open = {
           buyTime: time,
           checkTime: time,
           buyPrice: price,
-          buyPriceWithComission,
           sellTime: null,
           sellPrice: null,
           profit: null,
           profitWithComission: null,
-          takeProfit: cutoff,
-          stopLoss: buyPriceWithComission * (1 - cutoff)
+          takeProfit: cutoff * 2,
+          stopLoss: -cutoff
         };
         action.action = 'buy';
       } else {
@@ -55,17 +63,15 @@ const handlePrediction =
 
 const updateDeal = (comission, cutoff, deal, price, profit, time) => {
   deal.sellPrice = price;
-  deal.sellPriceWithComission = deal.sellPrice * (1 - comission);
   deal.profit = profit;
   deal.sellTime = time;
-  deal.profitWithComission = deal.sellPriceWithComission /
-                               deal.buyPriceWithComission - 1;
+  deal.profitWithComission = (deal.sellPrice * (1 - comission)) /
+                               (deal.buyPrice * (1 + comission)) - 1;
 
-  const newStopLoss = deal.sellPriceWithComission * (1 - cutoff);
-  deal.stopLoss =
-    (newStopLoss > deal.stopLoss)
-    ? newStopLoss
-    : deal.stopLoss;
+  if (deal.profitWithComission >= deal.takeProfit) {
+    deal.takeProfit = deal.takeProfit + cutoff;
+    deal.stopLoss = deal.stopLoss + cutoff;
+  }
   return deal;
 };
 

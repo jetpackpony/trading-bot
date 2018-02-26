@@ -1,10 +1,16 @@
 const R = require('ramda');
 
+const shouldWeSell = (deal, cutoff) => {
+  const profit = deal.profitWithComission;
+
+  return (profit <= -cutoff || profit >= (cutoff * 1.5));
+};
 const handlePrediction =
   R.curry(async (comission, cutoff, prediction, deals, actions) => {
     let { price, trend, time } = prediction;
     let { closed, open } = deals;
     let action = R.merge(prediction, { action: 'none' });
+
     if (open) {
       let profit = price / open.buyPrice - 1;
       open = updateDeal(comission, cutoff, open, price, profit, time);
@@ -13,22 +19,8 @@ const handlePrediction =
         open = null;
         action.action = 'sell';
       }
-      /*
-      if (trend === 'down') {
-        //if (Math.abs(open.profitWithComission) > cutoff) {
-        //console.log(`Got down trend prediction, selling: ${price} (${open.profitWithComission})`);
-          closed.push(open);
-          open = null;
-          action.action = 'sell';
-          //}
-      } else {
-        //console.log(`Trend is going up, standing by: ${price} (${open.profitWithComission})`);
-        open.checkTime = time;
-      }
-      */
     } else {
       if (trend === 'up') {
-        //console.log(`Buying for ${price}`);
         const buyPriceWithComission = price * (1 + comission);
         open = {
           buyTime: time,
@@ -43,8 +35,6 @@ const handlePrediction =
           stopLoss: buyPriceWithComission * (1 - cutoff)
         };
         action.action = 'buy';
-      } else {
-        //console.log(`Standing by at price: ${price}`);
       }
     }
     return {
