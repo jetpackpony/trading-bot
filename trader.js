@@ -4,13 +4,12 @@ const math = require('mathjs');
 
 const makeTrader = async ({
   plotInterval,
-  logId,
   predictor,
   handler,
-  plotter
+  plotter,
+  logger,
 }) => {
 
-  let logFileName = `logs/dealsLog-${logId}.log`;
   let deals = { closed: [], open: null };
   let actions = [];
   let dailyStats = [];
@@ -29,7 +28,7 @@ const makeTrader = async ({
       if (final) {
         const pred = await predictor.predict(klines, actions);
         ({ deals, actions } = await handler.handlePrediction(pred, deals, actions));
-        fs.writeFileSync(logFileName, JSON.stringify(deals, null, 2));
+        await logger.log({ deals, actions });
         if (actions.length % plotInterval === 0) {
           console.log('Plotted to: ', plotter.plot(actions));
         }

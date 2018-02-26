@@ -25,6 +25,7 @@ const params = {
   normCutoff: 1,
   realMoney: false,
   positionSize: 0.012,
+  logToDB: true,
 };
 
 const run = async () => {

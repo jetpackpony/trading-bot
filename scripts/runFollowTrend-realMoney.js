@@ -17,6 +17,7 @@ const params = {
   plotInterval: 1,
   realMoney: true,
   positionSize: 0.012,
+  logToDB: true,
 };
 
 const run = async () => {

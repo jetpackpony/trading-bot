@@ -14,7 +14,8 @@ const defaultArgs = {
   comission: 0.0005,
   cutoff: 0.01,               // price fluctuation after which we can sell, %
   logId: moment().valueOf(),
-  plotInterval: 0
+  plotInterval: 0,
+  logToDB: false,
 };
 
 const runStrategy = async (arguments) => {
@@ -25,15 +26,17 @@ const runStrategy = async (arguments) => {
   const makePredictor = require(`./strategies/${args.strategy}/predictor`);
   const makeHandler = require(`./strategies/${args.strategy}/predictionHandler`);
   const makePlotter = require(`./strategies/${args.strategy}/plotter`);
+  const makeLogger = require(`./loggers/${args.logToDB ? 'db' : 'file'}`);
   const predictor = await makePredictor(args);
   const plotter = await makePlotter(args);
   const handler = await makeHandler(args);
+  const logger = await makeLogger(args);
   const trader = await makeTrader({
     plotInterval: args.plotInterval,
-    logId: args.logId,
     predictor,
     handler,
-    plotter
+    plotter,
+    logger,
   });
 
   if (args.tickerType === 'backtest') {
