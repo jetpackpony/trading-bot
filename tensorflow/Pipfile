@@ -15,6 +15,11 @@ keras = "*"
 "h5py" = "*"
 ta-lib = "*"
 python-binance = "*"
+statsmodels = "*"
+plotly = "*"
+pytest = "*"
+sklearn = "*"
+jupyter = "*"
 
 
 [dev-packages]
