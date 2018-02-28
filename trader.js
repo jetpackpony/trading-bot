@@ -22,6 +22,7 @@ const makeTrader = async ({
       totalProfit: R.sum(R.pluck('profitWithComission', dayDeals))
     };
     dailyStats.push(day);
+    return day;
   };
   return {
     handleData: async ({ klines, final }) => {
@@ -39,13 +40,15 @@ const makeTrader = async ({
           console.log('Plotted to: ', plotter.plot(actions));
         }
         if (actions.length % 1440 === 0) {
-          recordDailyStats();
+          const dayStats = recordDailyStats();
+          logs.push(logger.logDailyStats(dayStats));
         }
         await Promise.all(logs);
       }
     },
-    finish: () => {
-      recordDailyStats();
+    finish: async () => {
+      const dayStats = recordDailyStats();
+      await logger.logDailyStats(dayStats);
     },
     getActions: () => actions,
     getDeals: () => deals,
