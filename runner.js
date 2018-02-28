@@ -44,6 +44,7 @@ const runStrategy = async (arguments) => {
     await ticker.start(trader.handleData);
     await trader.finish();
     console.log('Plotted at: ', trader.plotAll());
+    await logger.stopLogger();
     return trader.getStats();
   } else {
     const ticker = await makeRealTicker(args);

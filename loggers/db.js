@@ -2,7 +2,7 @@ const { setupDBPromise } = require('../db');
 const R = require('ramda');
 
 const makeLogger = async ({ logId }) => {
-  await setupDBPromise();
+  const connection = await setupDBPromise();
   const Action = require('../db/models/action').model;
   const DailyStats = require('../db/models/dailyStats').model;
 
@@ -21,6 +21,9 @@ const makeLogger = async ({ logId }) => {
     logDailyStats: async (stats) => {
       const st = new DailyStats({ runLog: logId, stats });
       await st.save();
+    },
+    stopLogger: async () => {
+      connection.close();
     }
   };
 };
