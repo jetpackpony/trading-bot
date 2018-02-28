@@ -27,14 +27,21 @@ const makeTrader = async ({
     handleData: async ({ klines, final }) => {
       if (final) {
         const pred = await predictor.predict(klines, actions);
-        ({ deals, actions } = await handler.handlePrediction(pred, deals, actions));
-        await logger.log({ deals, actions });
+        const prevDeals = deals;
+        ({ deals, actions } = await handler.handlePrediction(pred, prevDeals, actions));
+
+        const logs = [];
+        logs.push(logger.logAction(R.last(actions)));
+        if (!R.equals(prevDeals, deals)) {
+          logs.push(logger.logDeals(deals));
+        }
         if (actions.length % plotInterval === 0) {
           console.log('Plotted to: ', plotter.plot(actions));
         }
         if (actions.length % 1440 === 0) {
           recordDailyStats();
         }
+        await Promise.all(logs);
       }
     },
     finish: () => {
