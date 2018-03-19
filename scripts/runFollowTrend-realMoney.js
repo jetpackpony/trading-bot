@@ -26,7 +26,7 @@ const run = async () => {
       params,
       {
         limit: 600,
-        logId: `realMoney;${moment().format("Y-M-D_H:m:s")}strategy=${params.strategy}`
+        logId: `realMoney;${moment().format("Y-M-D_H:m:s")}`
       }
     ));
     console.log('Results: ', res);

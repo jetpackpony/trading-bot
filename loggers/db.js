@@ -12,16 +12,17 @@ const makeLogger = async ({ logId }) => {
 
   return {
     logAction: async (action) => {
-      const act = new Action({ runLog: logId, action });
+      const act = new Action({ runId: logId, action });
       await act.save();
     },
     logDeals: async (deals) => {
       await runDeals.update({ $set: { deals } });
     },
     logDailyStats: async (stats) => {
-      const st = new DailyStats({ runLog: logId, stats });
+      const st = new DailyStats({ runId: logId, stats });
       await st.save();
     },
+
     stopLogger: async () => {
       connection.close();
     }

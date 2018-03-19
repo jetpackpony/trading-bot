@@ -1,5 +1,6 @@
 const R = require('ramda');
 const runStrategy = require('../runner');
+const moment = require('moment');
 
 const params = {
   strategy: 'followTrend',
@@ -16,6 +17,7 @@ const params = {
   plotInterval: 1,
   realMoney: false,
   positionSize: 0.012,
+  logToDB: true,
 };
 
 const run = async () => {
@@ -24,7 +26,7 @@ const run = async () => {
       params,
       {
         limit: 600,
-        logId: `real;strategy=${params.strategy}`
+        logId: `realSocketFakeMoney;${moment().format("Y-M-D_H:m:s")}`
       }
     ));
     console.log('Results: ', res);
